@@ -1,0 +1,7 @@
+# 2018-11-06 - AuthType UWNetID
+AuthType Shibboleth
+ShibCompatWith24 on
+ShibRequestSetting requireSession 1
+ShibRequestSetting redirectToSSL 443
+# 2018-11-06 - require user ukc csayres enahas NMN3 wagen sos4 cm674520 laszloa lisowski deanej jgust wang72
+require shib-user ukc csayres enahas NMN3 wagen sos4 cm674520 laszloa lisowski deanej jgust wang72
