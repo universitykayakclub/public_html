@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-	<base href="http://students.washington.edu/ukc/07_website/"/>
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' ">
+	<base href="https://students.washington.edu/ukc/07_website/"/>
 	<!-- <base href="http://localhost:8000/07_website/"/> -->
 	<link rel="stylesheet" type="text/css" href="ukc_style.css" />
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
