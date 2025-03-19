@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self' ">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'strict-dynamic'; require-trusted-types-for 'script'">
 	<base href="https://students.washington.edu/ukc/07_website/"/>
-	<!-- <base href="http://localhost:8000/07_website/"/> -->
+	<!-- <base href="https://localhost:8000/07_website/"/> -->
 	<link rel="stylesheet" type="text/css" href="ukc_style.css" />
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name = "description" content = "Whitewater and Sea Kayaking for Students, Faculty, and Staff at the University of Washington" />

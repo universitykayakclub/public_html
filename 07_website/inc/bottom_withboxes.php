@@ -11,21 +11,21 @@
 		</td>
 		<td>
 			<div id="bottom_box">
-				<h3><a href="http://students.washington.edu/ukc/membership.php">Join</a>/Contact Us</h3>
+				<h3><a href="https://students.washington.edu/ukc/membership.php">Join</a>/Contact Us</h3>
 				<p>Show Up: <a href="classes.php#pool_session">Pool Session calendar</a></p>
 				<p>Contacts: <a href="officers.php">Officers</a></p>
 				<p>Email Lists: <a href="listserv.php">UKC Listserv</a></p>
-				<p>Visit <a href="http://uwkayakclub.blogspot.com/">our blog</a> for up to date trips and news</p>
+				<p>Visit <a href="https://uwkayakclub.blogspot.com/">our blog</a> for up to date trips and news</p>
 			</div><!--bottom_box-->
 		</td>
 	</table>
 </div> <!--bottombar-->-->
 	<div id="footer">
-			<p><a href="http://depts.washington.edu/ima/">[IMA/WAC Schedule]</a>&nbsp;<a href="kayaking_links.php">[Kayaking Links]</a>&nbsp;<a href="http://students.washington.edu/~ukc/xcomdir/X-com.html">[Officer Login]</a></p>
+			<p><a href="https://depts.washington.edu/ima/">[IMA/WAC Schedule]</a>&nbsp;<a href="kayaking_links.php">[Kayaking Links]</a>&nbsp;<a href="http://students.washington.edu/~ukc/xcomdir/X-com.html">[Officer Login]</a></p>
 		</div>
 	</div><!--border_begin-->
 </div>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+<script src="https://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
 _uacct = "UA-2761426-1";
