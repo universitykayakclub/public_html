@@ -1,11 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 	<base href="http://students.washington.edu/ukc/07_website/"/>
-	<!-- <base href="http://localhost:8000/"/> -->
+	<!-- <base href="http://localhost:8000/07_website/"/> -->
 	<link rel="stylesheet" type="text/css" href="ukc_style.css" />
-		        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-		        <meta name = "description" content = "Whitewater and Sea Kayaking for Students, Faculty, and Staff at the University of Washington" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name = "description" content = "Whitewater and Sea Kayaking for Students, Faculty, and Staff at the University of Washington" />
 	<title>University Kayak Club - @ the University of Washington</title>
 </head>
 <body>
