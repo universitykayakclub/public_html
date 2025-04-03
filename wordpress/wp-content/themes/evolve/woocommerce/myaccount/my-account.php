@@ -2,15 +2,14 @@
 /**
  * My Account page
  *
- * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version     2.6.0
+ * @version     3.5.0
  */
-if (!defined('ABSPATH')) {
-    exit;
-}
+
+defined( 'ABSPATH' ) || exit;
 
 wc_print_notices();
+
 ?>
 
 <div class="woocommerce-MyAccount-content">

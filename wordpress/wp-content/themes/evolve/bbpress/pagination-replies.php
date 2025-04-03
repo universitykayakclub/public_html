@@ -5,22 +5,25 @@
  * @package bbPress
  * @subpackage Theme
  */
-do_action('bbp_template_before_pagination_loop');
-?>
+do_action( 'bbp_template_before_pagination_loop' );
 
-<div class="bbp-pagination">
-    <div class="bbp-pagination-count">
+if ( ! bbp_get_topic_pagination_links() ) {
+	return;
+} ?>
 
-        <?php bbp_topic_pagination_count(); ?>
+    <div class="row">
+        <div class="col-md-6">
+            <nav aria-label="<?php _e( "Navigation", "evolve" ); ?>" class="navigation">
 
+				<?php bbp_topic_pagination_links(); ?>
+
+            </nav>
+        </div>
+        <div class="post-meta col-md-6 text-right mb-4 mb-lg-0">
+
+			<?php bbp_topic_pagination_count(); ?>
+
+        </div>
     </div>
 
-    <div class="pagination">
-
-        <?php bbp_topic_pagination_links(); ?>
-
-    </div>
-</div>
-
-<?php
-do_action('bbp_template_after_pagination_loop');
+<?php do_action( 'bbp_template_after_pagination_loop' );

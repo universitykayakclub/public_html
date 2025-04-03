@@ -2,7 +2,6 @@
 
 // if password is required
 if ( post_password_required() ) {
-	echo '<p>'. esc_html__( 'This post is password protected. Enter the password to view the comments.' ,'ashe') .'</p>';
 	return;
 }
 
@@ -10,7 +9,7 @@ if ( post_password_required() ) {
 if ( have_comments() ) : ?>
 
 	<h2  class="comment-title">
-		<?php comments_number( esc_html__( 'No Comments', 'ashe' ), esc_html__( 'One Comment', 'ashe' ), esc_html__( '% Comments', 'ashe' ) ); ?>
+		<?php comments_number( esc_html__( '0 Comments', 'ashe' ), esc_html__( 'One Comment', 'ashe' ), esc_html__( '% Comments', 'ashe' ) ); ?>
 	</h2>
 	
 	<ul class="commentslist" >
@@ -22,16 +21,14 @@ if ( have_comments() ) : ?>
 		<p class="fl"></p>
 		<p class="fr"></p>
 
-		<div>				
+		<div class="comments-pagination">				
 			<div class="default-previous">
-			<?php  previous_comments_link( '<i class="fa fa-long-arrow-left" ></i>&nbsp;'. esc_html__( 'Older Comments', 'ashe' )  ); ?>
+			<?php  previous_comments_link( '<i class="fa-solid fa-arrow-left-long"></i>&nbsp;'. esc_html__( 'Older Comments', 'ashe' )  ); ?>
 			</div>
 
 			<div class="default-next">
-				<?php  next_comments_link( esc_html__( 'Newer Comments', 'ashe' ) . '&nbsp;<i class="fa fa-long-arrow-right" ></i>'  ); ?>
+				<?php  next_comments_link( esc_html__( 'Newer Comments', 'ashe' ) . '&nbsp;<i class="fa-solid fa-arrow-right-long"></i>'  ); ?>
 			</div>
-			
-			<div class="clear"></div>
 		</div>
 	</div>
 <?php
@@ -41,5 +38,10 @@ if ( have_comments() ) : ?>
 endif;
 
 // Form
-comment_form();
+comment_form([
+	'title_reply' => esc_html__( 'Leave a Reply', 'ashe' ),
+	'comment_field' => '<p class="comment-form-comment"><label for="comment">' . esc_html__( 'Comment', 'ashe' ) . '</label><textarea name="comment" id="comment" cols="45" rows="8"  maxlength="65525" required="required" spellcheck="false"></textarea></p>',
+	'label_submit' => esc_html__( 'Post Comment', 'ashe' )
+]);
+
 ?>

@@ -2,6 +2,11 @@
 <div class="main-container">
 	
 	<?php
+	
+	// Category Description
+	if ( is_category() ) {
+		get_template_part( 'templates/grid/category', 'description' );
+	}
 
 	// Blog Grid
 	echo '<ul class="blog-grid">';
@@ -13,10 +18,15 @@
 
 			the_post();
 
+			// if is preview (boat post)
+			if ( ! ( ashe_is_preview() && get_the_ID() == 19 ) ) :
+
+			$post_class = ( true == ashe_options('blog_page_show_dropcaps') ) ? 'blog-post ashe-dropcaps' : 'blog-post';
+
 			echo '<li>';
 
 			?>
-			<article id="post-<?php the_ID(); ?>" <?php post_class('blog-post'); ?>>
+			<article id="post-<?php the_ID(); ?>" <?php post_class($post_class); ?>>
 				
 				<div class="post-media">
 					<a href="<?php echo esc_url( get_permalink() ); ?>"></a>
@@ -36,17 +46,29 @@
 					?>
 
 					<?php if ( get_the_title() ) : ?>
-					<h1 class="post-title">
-						<a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a>
-					</h1>
+					<h2 class="post-title">
+						<a href="<?php echo esc_url( get_the_permalink() ); ?>"><?php the_title(); ?></a>
+					</h2>
 					<?php endif; ?>
 
-					<?php if ( ashe_options( 'blog_page_show_date' ) === true ) : ?>
+					<?php if ( ashe_options( 'blog_page_show_date' ) || ashe_options( 'blog_page_show_comments' ) ) : ?>
 					<div class="post-meta clear-fix">
-						<span class="post-date"><?php the_time( get_option( 'date_format' ) ); ?></span>
+
+						<?php if ( ashe_options( 'blog_page_show_date' ) === true ) : ?>
+							<span class="post-date"><?php the_time( get_option( 'date_format' ) ); ?></span>
+						<?php endif; ?>
+						
+						<span class="meta-sep">/</span>
+						
+						<?php
+						if ( ashe_post_sharing_check() && ashe_options( 'blog_page_show_comments' ) === true ) {
+							comments_popup_link( esc_html__( '0 Comments', 'ashe' ), esc_html__( '1 Comment', 'ashe' ), '% '. esc_html__( 'Comments', 'ashe' ), 'post-comments');
+						}
+						?>
+
 					</div>
 					<?php endif; ?>
-					
+
 				</header>
 
 				<?php if ( ashe_options( 'blog_page_post_description' ) !== 'none' ) : ?>
@@ -79,23 +101,27 @@
 					<?php endif; ?>
 
 					<?php
-					if ( ashe_options( 'blog_page_show_comments' ) === true ) {
-						comments_popup_link( esc_html__( 'No Comments', 'ashe' ), esc_html__( '1 Comment', 'ashe' ), '% '. esc_html__( 'Comments', 'ashe' ), 'post-comments');
+			
+					if ( ashe_post_sharing_check() ) {
+						ashe_post_sharing();
+					} else if ( ashe_options( 'blog_page_show_comments' ) === true ) {
+						comments_popup_link( esc_html__( '0 Comments', 'ashe' ), esc_html__( '1 Comment', 'ashe' ), '% '. esc_html__( 'Comments', 'ashe' ), 'post-comments');
 					}
+
 					?>
 					
 				</footer>
 
 				<!-- Related Posts -->
-				<?php
-				ashe_related_posts( esc_html__( 'You May Also Like','ashe' ), ashe_options( 'blog_page_related_orderby' ) );
-				?>
+				<?php ashe_related_posts( esc_html__( 'You May Also Like','ashe' ), ashe_options( 'blog_page_related_orderby' ) ); ?>
 
 			</article>
 		
 			<?php
 
 			echo '</li>';
+
+			endif;
 
 		endwhile; // Loop End
 
@@ -108,8 +134,7 @@
 		<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'ashe' ); ?></p>
 		<div class="ashe-widget widget_search">
 			<?php get_search_form(); ?>
-		</div> 
-		
+		</div>
 	</div>
 
 	<?php

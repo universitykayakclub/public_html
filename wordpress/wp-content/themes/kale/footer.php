@@ -13,7 +13,7 @@
         <?php get_sidebar('footer'); ?>
         
         <!-- Footer -->
-        <div class="footer">
+        <div class="footer" role="contentinfo">
             
             <?php if ( is_active_sidebar( 'footer-row-3-center' ) ) { ?>
             <div class="footer-row-3-center"><?php dynamic_sidebar( 'footer-row-3-center' ); ?>
@@ -26,7 +26,7 @@
             
             <div class="footer-copyright">
                 <ul class="credit">
-                    <li><a href="https://www.lyrathemes.com/kale/"><?php esc_html_e('Kale', 'kale'); ?></a> <?php esc_html_e('by LyraThemes.com', 'kale'); ?></a>.</li>
+                    <li><a href="https://www.lyrathemes.com/kale/"><?php esc_html_e('Kale', 'kale'); ?></a> <?php esc_html_e('by LyraThemes.com', 'kale'); ?>.</li>
                 </ul>
             </div>
             

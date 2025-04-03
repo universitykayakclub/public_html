@@ -16,7 +16,7 @@ $kale_sidebar_size = kale_get_option('kale_sidebar_size');
 ?>
 
 <!-- Main Column -->
-<div class="main-column <?php if($kale_sidebar_size == 0) { ?> col-md-8 <?php } else { ?> col-md-9 <?php } ?>">
+<div class="main-column <?php if($kale_sidebar_size == 0) { ?> col-md-8 <?php } else { ?> col-md-9 <?php } ?>" role="main">
     <!-- Blog Feed -->
     <div class="blog-feed">
         <h2><?php echo get_the_archive_title(); ?></h2>
@@ -47,8 +47,10 @@ $kale_sidebar_size = kale_get_option('kale_sidebar_size');
         </div>
         <?php if(get_next_posts_link() || get_previous_posts_link()) { ?>
         <div class="pagination-blog-feed">
-            <?php if( get_next_posts_link() ) { ?><div class="previous_posts"><?php next_posts_link( esc_html__('Previous Posts', 'kale') ); ?></div><?php } ?>
-            <?php if( get_previous_posts_link() ) { ?><div class="next_posts"><?php previous_posts_link( esc_html__('Next Posts', 'kale') ); ?></div><?php } ?>
+            <?php kale_pagination(null, [], function(){ ?>
+                <?php if( get_next_posts_link() ) { ?><div class="previous_posts"><?php next_posts_link( esc_html__('Previous Posts', 'kale') ); ?></div><?php } ?>
+                <?php if( get_previous_posts_link() ) { ?><div class="next_posts"><?php previous_posts_link( esc_html__('Next Posts', 'kale') ); ?></div><?php } ?>
+            <?php }); ?>
         </div>
         <?php } ?>
     </div>

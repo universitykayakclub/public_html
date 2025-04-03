@@ -11,12 +11,12 @@
 <!-- Two Columns -->
 <div class="row two-columns">
     <!-- Main Column -->
-    <div class="main-column col-md-12">
+    <div class="main-column col-md-12" role="main">
         
         <!-- Page Content -->
         <div class="error-404">
             <h1 class="entry-title"><?php _e('404', 'kale'); ?></h1>
-            <h3><?php _e('Page Not Found', 'kale'); ?></h3>
+            <p><?php _e('Page Not Found', 'kale'); ?></p>
         </div>
         <!-- /Page Content -->
         

@@ -7,49 +7,26 @@
  */
 ?>
 
-<div id="post-<?php bbp_forum_id(); ?>" <?php bbp_forum_class(); ?>>
+<div class="bbp-search-result bbp-forum-result">
+    <div class="bbp-reply-header">
 
-    <div class="bbp-forum-search">
+		<?php do_action( 'bbp_theme_before_forum_title' ); ?>
 
-        <div class="bbp-reply-header">
+        <strong><?php esc_html_e( 'Forum: ', 'evolve' ); ?></strong>
 
-            <div class="bbp-meta">
+        <a class="bbp-permalink" href="<?php bbp_forum_permalink(); ?>">
 
-                <a href="<?php bbp_forum_permalink(); ?>" class="bbp-reply-permalink">#<?php bbp_forum_id(); ?></a>
+			<?php bbp_forum_title(); ?>
 
-                <div class="bbp-forum-title">
+        </a>
 
-                    <?php do_action('bbp_theme_before_forum_title'); ?>
+		<?php do_action( 'bbp_theme_after_forum_title' ); ?>
 
-                    <span class="bbp-forum"><?php _e('Forum: ', 'evolve'); ?><a href="<?php bbp_forum_permalink(); ?>"><?php bbp_forum_title(); ?></a></span>
+        <span class="post-meta">
 
-                    <?php do_action('bbp_theme_after_forum_title'); ?>
+                <?php printf( __( 'Last updated %s', 'evolve' ), bbp_get_forum_last_active_time() ); ?>
 
-                    <span class="bbp-forum-post-date"><?php printf(__('Last updated %s', 'evolve'), bbp_get_forum_last_active_time()); ?> | </span>
+                </span>
 
-                </div><!-- .bbp-forum-title -->
-
-            </div><!-- .bbp-meta -->
-
-        </div><!-- .bbp-forum-header -->
-
-
-        <div class="bbp-reply-content">
-
-            <div class="bbp-reply-entry">
-
-                <?php
-                do_action('bbp_theme_before_forum_content');
-
-                bbp_forum_content();
-
-                do_action('bbp_theme_after_forum_content');
-                ?>
-
-            </div>
-
-        </div><!-- .bbp-forum-content -->
-
-    </div>
-
-</div><!-- #post-<?php bbp_forum_id(); ?> -->
+    </div><!-- .bbp-forum-header -->
+</div>

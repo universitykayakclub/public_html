@@ -5,6 +5,9 @@
 		
 		<?php
 
+		// Social Icons
+		ashe_social_media( 'top-bar-socials' );
+
 		// Menu
 		wp_nav_menu( array(
 			'theme_location' 	=> 'top',
@@ -12,11 +15,28 @@
 			'menu_class' 		=> '',
 			'container' 	 	=> 'nav',
 			'container_class'	=> 'top-menu-container',
-			'fallback_cb' 		=> 'top_menu_fallback'
+			'fallback_cb' 		=> 'ashe_top_menu_fallback'
 		) );
-		
-		// Social Icons
-		ashe_social_media( 'top-bar-socials' );
+
+		if ( ashe_options( 'main_nav_label' ) === false && has_nav_menu('top') ) { ?>
+				
+			<!-- Mobile Menu Button -->
+			<span class="mobile-menu-btn">
+				<i class="fa-solid fa-bars"></i>
+			</span>
+
+			<?php
+
+			// Mobile Menu
+			wp_nav_menu( array(
+				'theme_location' 	=> 'top',
+				'menu_id'        	=> 'mobile-menu',
+				'menu_class' 		=> '',
+				'container' 	 	=> 'nav',
+				'container_class'	=> 'mobile-menu-container',
+				'fallback_cb' 		=> false
+			) );
+		}
 
 		?>
 

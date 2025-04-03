@@ -1,13 +1,14 @@
 /*** Kale - JS ***/
 jQuery(document).ready(function($){
-	
-	kale_responsive_videos();
-	
+
+	if (jQuery('.single-content iframe, .page-content iframe').length) {
+		kale_responsive_videos();
+	}
+
     $("#toggle-main_search").on("click", function (event) {
         var x = setTimeout('jQuery(".main_search .form-control").focus()', 700);
     });
-});
-jQuery(document).ready(function($){
+
 	fluidBox();
 	$(window).load(function(){fluidBox();})
 	$(window).resize(function(){fluidBox();});
@@ -32,23 +33,33 @@ jQuery(document).ready(function($){
 		setupLabel();
 	});
 	setupLabel();
+
+	$('.search-trigger').on( 'click', function() {
+		$(this).siblings('form').find('.search-field').toggleClass('visible').focus();
+	});
+
+    if ( $('.header-row-1 .widget_nav_menu li').hasClass( 'menu-item-has-children' ) ) {
+        $('.header-row-1 .menu-item-has-children').addClass('dropdown')
+            .find('> a').addClass('dropdown-toggle has-submenu')
+            .append('<span class="caret 0"></span>');
+    }
 });
 function setupLabel() {
 	if (jQuery('.checkbox,.checkbox-inline').length) {
-		jQuery('.checkbox label,.checkbox-inline label').each(function(){ 
+		jQuery('.checkbox label,.checkbox-inline label').each(function(){
 			jQuery(this).removeClass('on');
 		});
-		jQuery('.checkbox input:checked,.checkbox-inline input:checked').each(function(){ 
+		jQuery('.checkbox input:checked,.checkbox-inline input:checked').each(function(){
 			jQuery(this).parent('label').addClass('on');
-		});                
+		});
 	};
 	if (jQuery('.radio,.radio-inline').length) {
-		jQuery('.radio label,.radio-inline label').each(function(){ 
+		jQuery('.radio label,.radio-inline label').each(function(){
 			jQuery(this).removeClass('on');
 		});
-		jQuery('.radio input:checked,.radio-inline input:checked').each(function(){ 
+		jQuery('.radio input:checked,.radio-inline input:checked').each(function(){
 			jQuery(this).parent('label').addClass('on');
-		});                
+		});
 	};
 };
 
@@ -99,19 +110,19 @@ function fluidBox(){
 function kale_responsive_videos(){
 	YOUTUBE_VIDEO_MARGIN = 5;
 	jQuery('.single-content iframe, .page-content iframe').each(function(index,item) {
-		if(jQuery(item).attr('src').match(/(https?:)?\/\/www\.youtube\.com/)) {
+		if(jQuery(this)[0].hasAttribute("src") && jQuery(item).attr('src').match(/(https?:)?\/\/www\.youtube\.com/)) {
 			var w=jQuery(item).attr('width');
 			var h=jQuery(item).attr('height');
 			var ar = h/w*100;
 			ar=ar.toFixed(2);
-			//Style iframe		
+			//Style iframe
 			jQuery(item).css('position','absolute');
 			jQuery(item).css('top','0');
-			jQuery(item).css('left','0');		
+			jQuery(item).css('left','0');
 			jQuery(item).css('width','100%');
 			jQuery(item).css('height','100%');
 			jQuery(item).css('max-width',w+'px');
-			jQuery(item).css('max-height', h+'px');				
+			jQuery(item).css('max-height', h+'px');
 			jQuery(item).wrap('<div style="max-width:'+w+'px;margin:0 auto; padding:'+YOUTUBE_VIDEO_MARGIN+'px;" />');
 			jQuery(item).wrap('<div style="position: relative;padding-bottom: '+ar+'%; height: 0; overflow: hidden;" />');
 		}

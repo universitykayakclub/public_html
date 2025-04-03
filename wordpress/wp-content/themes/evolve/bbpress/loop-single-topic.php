@@ -11,85 +11,96 @@
 
     <li class="bbp-topic-title">
 
-        <?php
-        if (bbp_is_user_home()) :
+		<?php if ( bbp_is_user_home() ) :
 
-            if (bbp_is_favorites()) :
-                ?>
+			if ( bbp_is_favorites() ) : ?>
 
                 <span class="bbp-topic-action">
 
-                    <?php
-                    do_action('bbp_theme_before_topic_favorites_action');
+                    <?php do_action( 'bbp_theme_before_topic_favorites_action' );
 
-                    bbp_user_favorites_link(array('before' => '', 'favorite' => '+', 'favorited' => '&times;'));
+                    bbp_user_favorites_link( array(
+	                    'before'    => '<span class="mr-2">',
+	                    'after'     => '</span>',
+	                    'favorited' => evolve_get_svg( 'close' )
+                    ) );
 
-                    do_action('bbp_theme_after_topic_favorites_action');
-                    ?>
+                    do_action( 'bbp_theme_after_topic_favorites_action' ); ?>
 
                 </span>
 
-            <?php elseif (bbp_is_subscriptions()) : ?>
+			<?php elseif ( bbp_is_subscriptions() ) : ?>
 
                 <span class="bbp-topic-action">
 
-                    <?php
-                    do_action('bbp_theme_before_topic_subscription_action');
+                    <?php do_action( 'bbp_theme_before_topic_subscription_action' );
 
-                    bbp_user_subscribe_link(array('before' => '', 'subscribe' => '+', 'unsubscribe' => '&times;'));
+                    bbp_user_subscribe_link( array(
+	                    'before'      => '<span class="mr-2">',
+	                    'after'       => '</span>',
+	                    'unsubscribe' => evolve_get_svg( 'close' )
+                    ) );
 
-                    do_action('bbp_theme_after_topic_subscription_action');
-                    ?>
+                    do_action( 'bbp_theme_after_topic_subscription_action' ); ?>
 
                 </span>
 
-                <?php
-            endif;
+			<?php endif;
 
-        endif;
+		endif;
 
-        do_action('bbp_theme_before_topic_title');
-        ?>
+		do_action( 'bbp_theme_before_topic_title' ); ?>
 
-        <a class="bbp-topic-permalink" href="<?php bbp_topic_permalink(); ?>"><?php bbp_topic_title(); ?></a>
+        <a class="bbp-permalink" href="<?php bbp_topic_permalink(); ?>">
 
-        <?php
-        do_action('bbp_theme_after_topic_title');
+			<?php bbp_topic_title();
 
-        bbp_topic_pagination();
+			if ( bbp_is_topic_sticky() ) {
+				echo ' ' . evolve_get_svg( 'pin' );
+			} ?>
 
-        do_action('bbp_theme_before_topic_meta');
-        ?>
+        </a>
+
+		<?php do_action( 'bbp_theme_after_topic_title' );
+
+		bbp_topic_pagination();
+
+		do_action( 'bbp_theme_before_topic_meta' ); ?>
 
         <p class="bbp-topic-meta">
 
-            <?php do_action('bbp_theme_before_topic_started_by'); ?>
+			<?php do_action( 'bbp_theme_before_topic_started_by' ); ?>
 
-            <span class="bbp-topic-started-by"><?php printf(__('Started by: %1$s', 'evolve'), bbp_get_topic_author_link(array('type' => 'name'))); ?></span>
+            <span class="post-meta bbp-topic-started-by">
 
-            <?php
-            do_action('bbp_theme_after_topic_started_by');
+                <?php printf( __( 'Started by %1$s', 'evolve' ), bbp_get_topic_author_link( array(
+	                'type' => 'name',
+	                'size' => '30'
+                ) ) ); ?>
 
-            if (!bbp_is_single_forum() || ( bbp_get_topic_forum_id() !== bbp_get_forum_id() )) :
+            </span>
 
-                do_action('bbp_theme_before_topic_started_in');
-                ?>
+			<?php do_action( 'bbp_theme_after_topic_started_by' );
 
-                <span class="bbp-topic-started-in"><?php printf(__('in: <a href="%1$s">%2$s</a>', 'evolve'), bbp_get_forum_permalink(bbp_get_topic_forum_id()), bbp_get_forum_title(bbp_get_topic_forum_id())); ?></span>
+			if ( ! bbp_is_single_forum() || ( bbp_get_topic_forum_id() !== bbp_get_forum_id() ) ) :
 
-                <?php
-                do_action('bbp_theme_after_topic_started_in');
+				do_action( 'bbp_theme_before_topic_started_in' ); ?>
 
-            endif;
-            ?>
+                <span class="post-meta bbp-topic-started-in">
+
+                    <?php printf( __( 'in <a href="%1$s"><b>%2$s</b></a>', 'evolve' ), bbp_get_forum_permalink( bbp_get_topic_forum_id() ), bbp_get_forum_title( bbp_get_topic_forum_id() ) ); ?>
+
+                </span>
+
+				<?php do_action( 'bbp_theme_after_topic_started_in' );
+
+			endif; ?>
 
         </p>
 
-        <?php
-        do_action('bbp_theme_after_topic_meta');
+		<?php do_action( 'bbp_theme_after_topic_meta' );
 
-        bbp_topic_row_actions();
-        ?>
+		bbp_topic_row_actions(); ?>
 
     </li>
 
@@ -97,25 +108,26 @@
 
     <li class="bbp-topic-reply-count"><?php bbp_show_lead_topic() ? bbp_topic_reply_count() : bbp_topic_post_count(); ?></li>
 
-    <li class="bbp-topic-freshness">
+    <li class="post-meta bbp-topic-freshness">
 
-        <?php
-        do_action('bbp_theme_before_topic_freshness_link');
+		<?php do_action( 'bbp_theme_before_topic_freshness_author' ); ?>
 
-        bbp_topic_freshness_link();
+        <span class="bbp-topic-freshness-author float-right">
 
-        do_action('bbp_theme_after_topic_freshness_link');
-        ?>
+            <?php bbp_author_link( array(
+	            'post_id' => bbp_get_topic_last_active_id(),
+	            'size'    => '30'
+            ) ); ?>
 
-        <p class="bbp-topic-meta">
+        </span>
 
-            <?php do_action('bbp_theme_before_topic_freshness_author'); ?>
+		<?php do_action( 'bbp_theme_after_topic_freshness_author' );
 
-            <span class="bbp-topic-freshness-author"><?php bbp_author_link(array('post_id' => bbp_get_topic_last_active_id(), 'type' => 'name')); ?></span>
+		do_action( 'bbp_theme_before_topic_freshness_link' );
 
-            <?php do_action('bbp_theme_after_topic_freshness_author'); ?>
+		bbp_topic_freshness_link();
 
-        </p>
+		do_action( 'bbp_theme_after_topic_freshness_link' ); ?>
+
     </li>
-
 </ul><!-- #bbp-topic-<?php bbp_topic_id(); ?> -->

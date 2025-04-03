@@ -100,7 +100,7 @@ table td {
 
 
 /* Content */
-.post-content > p:first-child:first-letter {
+.post-content > p:first-of-type:first-letter {
 	float: right !important;
 	margin: 0px 0 0 12px !important;
 }
@@ -270,6 +270,25 @@ table td {
 	margin-right: 0;
 }
 
+.footer-menu-container {
+	float: left;
+}
+
+#footer-menu {
+  	float: right;
+}
+
+#footer-menu > li {
+	margin-right: 0;
+	margin-left: 5px;
+}
+
+.footer-menu-container:after {
+	float: left;
+	margin-right: 0;
+	margin-left: 5px;
+}
+
 .scrolltop {
 	right: auto;
 	left: 80px;
@@ -309,21 +328,21 @@ table td {
 }
 
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.prev {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.prev {
     left: auto;
     right: 0;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.next {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.next {
     left: 0;
     right: auto;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.prev:after {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.prev:after {
     content: "\f178";
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.next:after {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.next:after {
     content: "\f177";
 }
 
@@ -395,5 +414,14 @@ table td {
 	.gallery-item:nth-child(2n+2) {
 		margin-left: 0 !important;
 	}
+
+}
+
+/* Viewport Size 320px */
+@media screen and ( max-width: 320px ) {
+  
+  .post-content {
+    text-align: right;
+  }
 
 }

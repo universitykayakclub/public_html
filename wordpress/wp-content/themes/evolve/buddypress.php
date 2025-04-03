@@ -1,34 +1,60 @@
 <?php
+
+/*
+    Main Template For BuddyPress
+    ======================================= */
+
+/*
+    Header Area
+    --------------------------------------- */
+
 get_header();
-$evolve_layout = evolve_get_option('evl_layout', '2cl');
-$evolve_post_layout = evolve_get_option('evl_post_layout', 'two');
-if (evolve_lets_get_sidebar_2() == true):
-    get_sidebar('2');
-endif;
-?>
 
-<div id="primary" class="<?php evolve_layout_class($type = 2); ?>">
+/*
+	Before Content Area
 
-<?php if (have_posts()): the_post(); ?>
+	---------------------------------------
+	Hooked: evolve_primary_container_open() - 10
+	--------------------------------------- */
 
-        <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-            <span class="entry-title" style="display: none;"><?php the_title(); ?></span>
-            <span class="vcard" style="display: none;"><span class="fn"><?php the_author_posts_link(); ?></span></span>     
+do_action( 'evolve_before_content_area' );
 
-            <div class="post-content">
-                <?php the_content();
-                wp_link_pages(array('before' => '<div id="page-links"><p><strong>' . __('Pages', 'evolve') . ':</strong>', 'after' => '</p></div>'));
-                ?>
-            </div>
+if ( have_posts() ): the_post(); ?>
+
+    <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+        <span class="post-title" style="display: none;"><?php the_title(); ?></span>
+        <span class="vcard" style="display: none;"><span
+                    class="fn"><?php the_author_posts_link(); ?></span></span>
+        <div class="post-content" itemprop="mainContentOfPage">
+			<?php the_content();
+			evolve_wp_link_pages(); ?>
         </div>
+    </div>
 
-<?php endif; ?>
-</div>
-<?php
+<?php endif;
+
+/*
+   	After Content Area
+
+	---------------------------------------
+	Hooked: evolve_primary_container_close() - 10
+	--------------------------------------- */
+
+do_action( 'evolve_after_content_area' );
+
 wp_reset_query();
 
-if (evolve_lets_get_sidebar() == true):
-    get_sidebar();
-endif;
+/*
+	Sidebars
+
+	---------------------------------------
+	Hooked: evolve_sidebars() - 10
+	--------------------------------------- */
+
+do_action( 'evolve_sidebars_area' );
+
+/*
+	Footer Area
+	--------------------------------------- */
 
 get_footer();

@@ -13,7 +13,7 @@
         || is_active_sidebar( 'footer-row-2-col-5' ) ) { ?>
 
 <!-- Footer Widgets -->
-<div class="footer-widgets">
+<aside class="footer-widgets" role="complementary" aria-label="<?php _ex( 'Footer sidebar', 'aria label', 'kale' ); ?>">
 
     <!-- Footer Row 2 -->
     <?php 
@@ -45,7 +45,7 @@
      
      
 
-</div>
+</aside>
 <?php } ?>
 
 <!-- /Footer Widgets -->

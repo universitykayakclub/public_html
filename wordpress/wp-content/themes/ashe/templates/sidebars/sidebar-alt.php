@@ -1,7 +1,7 @@
 <?php
 
 // check if available
-if ( ashe_options( 'main_nav_show_sidebar' ) === false ) {
+if ( ashe_options( 'main_nav_show_sidebar' ) === false || ashe_options( 'main_nav_label' ) === false ) {
 	return;
 }
 

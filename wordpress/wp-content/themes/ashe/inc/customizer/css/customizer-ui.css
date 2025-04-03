@@ -26,17 +26,44 @@
 	font-weight: 500;
 }
 
+.tab-title a {
+	box-shadow: none !important;
+	text-decoration: none;
+	margin-left: 10px;
+	padding-left: 10px;
+	border-left: 2px solid #eee;
+	font-size: 12px;
+}
+
+.tab-title span {
+  display: inline-block !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.video-tutorial {
+	font-size: 16px;
+	line-height: 20px;
+	color: red;
+}
+
+#customize-control-ashe_options-featured_links_label.tab-title,
+#customize-control-ashe_options-featured_slider_label.tab-title {
+	font-size: 12px !important;
+}
+
 .customize-control-checkbox label {
 	padding: 0;
 }
 
 #customize-theme-controls .customize-pane-child.accordion-section-content li:last-of-type {
-	padding-bottom: 20px
+	padding-bottom: 20px;
 }
 
 #customize-control-ashe_options-top_bar_label,
 #customize-control-ashe_options-preloader_label,
-#customize-control-ashe_options-social_media_window {
+#customize-control-ashe_options-social_media_window,
+#customize-control-ashe_options-featured_links_label {
 	padding-bottom: 8px !important;
 }
 
@@ -55,18 +82,6 @@
 	left: 0;
 	background-color: rgba(0, 0, 0, 0.15);
 	cursor: not-allowed;
-}
-
-
-/* Social Media Select */
-li[id*="customize-control-ashe_options-social_media_icon"] select {
-	font-family: "FontAwesome";
-	float: right;
-	width: 80px;
-}
-
-li[id*="customize-control-ashe_options-social_media_icon"] label {
-	float: left;
 }
 
 /* Copyright */
@@ -145,5 +160,9 @@ li[id*="pro_version"] a {
 
 /* Display Header Text Color */
 #customize-control-header_textcolor {
+	display: block !important;
+}
+
+#accordion-section-ashe_feature_request_section {
 	display: block !important;
 }

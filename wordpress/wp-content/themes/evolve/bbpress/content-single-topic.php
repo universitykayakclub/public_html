@@ -9,57 +9,48 @@
 
 <div id="bbpress-forums">
 
-    <?php
-    $evolve_breadcrumbs = evolve_get_option('evl_breadcrumbs', '1');
-    if ($evolve_breadcrumbs == "1"):
-        bbp_breadcrumb();
-    endif;
+	<?php if ( bbp_allow_search() ) : ?>
 
-    if (bbp_allow_search()) :
-        ?>
+        <div class="search-full-width">
 
-        <div class="bbp-search-form">
+			<?php bbp_get_template_part( 'form', 'search' ); ?>
 
-            <?php bbp_get_template_part('form', 'search'); ?>
+        </div><!-- .search-full-width -->
 
-        </div>
+	<?php endif;
 
-        <?php
-    endif;
+	do_action( 'bbp_template_before_single_topic' );
 
-    do_action('bbp_template_before_single_topic');
+	if ( post_password_required() ) :
 
-    if (post_password_required()) :
+		bbp_get_template_part( 'form', 'protected' );
 
-        bbp_get_template_part('form', 'protected');
+	else :
 
-    else :
+		if ( bbp_show_lead_topic() ) :
 
-        bbp_topic_tag_list(bbp_get_topic_id(), array('before' => '<div class="bbp-topic-tags"><p>' . esc_html__('Tags:', 'evolve') . '&nbsp;', 'sep' => ' ', 'after' => '</p></div>'));
+			bbp_get_template_part( 'content', 'single-topic-lead' );
 
-        if (bbp_show_lead_topic()) :
+			bbp_topic_tag_list( bbp_get_topic_id(), array(
+				'before' => '<div class="post-meta mb-4">' . evolve_get_svg( 'tag' ),
+				'after'  => '</div>',
+				'sep'    => ', '
+			) );
 
-            bbp_get_template_part('content', 'single-topic-lead');
+		endif;
 
-        endif;
+		if ( bbp_has_replies() ) :
 
-        if (bbp_has_replies()) :
-            ?>
-            <div class="top_pagination">
-                <?php bbp_get_template_part('pagination', 'replies'); ?>
-            </div>
-            <?php
-            bbp_get_template_part('loop', 'replies');
+			bbp_get_template_part( 'loop', 'replies' );
 
-            bbp_get_template_part('pagination', 'replies');
+			bbp_get_template_part( 'pagination', 'replies' );
 
-        endif;
+		endif;
 
-        bbp_get_template_part('form', 'reply');
+		bbp_get_template_part( 'form', 'reply' );
 
-    endif;
+	endif;
 
-    do_action('bbp_template_after_single_topic');
-    ?>
+	do_action( 'bbp_template_after_single_topic' ); ?>
 
-</div>
+</div><!-- #bbpress-forums -->

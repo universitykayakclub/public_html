@@ -7,86 +7,73 @@
  */
 ?>
 
-<div id="post-<?php bbp_topic_id(); ?>" <?php bbp_topic_class(); ?>>
+<div class="bbp-search-result bbp-topic-result">
 
-    <div class="bbp-reply-author">
+	<?php if ( bbp_is_user_home() ) :
 
-        <?php
-        do_action('bbp_theme_before_topic_author_details');
+		if ( bbp_is_favorites() ) : ?>
 
-        bbp_topic_author_link(array('sep' => '', 'show_role' => true));
-        ?>
+		<?php elseif ( bbp_is_subscriptions() ) : ?>
 
-        <div class="bbp-reply-post-date"><?php bbp_topic_post_date(bbp_get_topic_id()); ?></div>
+		<?php endif;
 
-        <div class="bbps-post-count"><?php printf(__('Post count: %s', 'evolve'), bbp_get_user_reply_count_raw(bbp_get_reply_author_id())); ?></div>
+	endif; ?>
 
-        <?php
-        if (bbp_is_user_keymaster()) :
+    <strong><?php esc_html_e( 'Topic: ', 'evolve' ); ?></strong>
 
-            do_action('bbp_theme_before_topic_author_admin_details');
-            ?>
+    <?php
 
-            <div class="bbp-reply-ip"><?php bbp_author_ip(bbp_get_topic_id()); ?></div>
+	do_action( 'bbp_theme_before_topic_title' ); ?>
 
-            <?php
-            do_action('bbp_theme_after_topic_author_admin_details');
+    <a class="bbp-permalink" href="<?php bbp_topic_permalink(); ?>">
 
-        endif;
+		<?php bbp_topic_title();
 
-        do_action('bbp_theme_after_topic_author_details');
-        ?>
+		if ( bbp_is_topic_sticky() ) {
+			echo ' ' . evolve_get_svg( 'pin' );
+		} ?>
 
-    </div><!-- .bbp-topic-author -->
+    </a>
 
-    <div class="bbp-reply-content">
-        <div class="bbp-reply-header">
-            <div class="bbp-meta">
+	<?php do_action( 'bbp_theme_after_topic_title' );
 
-                <?php do_action('bbp_theme_before_topic_title'); ?>
+	bbp_topic_pagination();
 
-                <a href="<?php bbp_topic_permalink(); ?>" class="bbp-reply-permalink">#<?php bbp_topic_id(); ?></a>
+	do_action( 'bbp_theme_before_topic_meta' ); ?>
 
-                <div class="bbp-topic-title-meta">
+    <p class="bbp-topic-meta">
 
-                    <span class="bbp-search-topic"><?php _e('Topic: ', 'evolve'); ?>
-                        <a href="<?php bbp_topic_permalink(); ?>"><?php bbp_topic_title(); ?></a></span>
+		<?php do_action( 'bbp_theme_before_topic_started_by' ); ?>
 
-                    <?php
-                    if (function_exists('bbp_is_forum_group_forum') && bbp_is_forum_group_forum(bbp_get_topic_forum_id())) :
+        <span class="post-meta bbp-topic-started-by">
 
-                        _e('in group forum ', 'evolve');
+                <?php printf( __( 'Started by %1$s', 'evolve' ), bbp_get_topic_author_link( array(
+	                'type' => 'name',
+	                'size' => '30'
+                ) ) ); ?>
 
-                    else :
+            </span>
 
-                        _e('in forum ', 'evolve');
+		<?php do_action( 'bbp_theme_after_topic_started_by' );
 
-                    endif;
-                    ?>
+		if ( ! bbp_is_single_forum() || ( bbp_get_topic_forum_id() !== bbp_get_forum_id() ) ) :
 
-                    <a href="<?php bbp_forum_permalink(bbp_get_topic_forum_id()); ?>"><?php bbp_forum_title(bbp_get_topic_forum_id()); ?></a> |
+			do_action( 'bbp_theme_before_topic_started_in' ); ?>
 
-                </div><!-- .bbp-topic-title-meta -->
+            <span class="post-meta bbp-topic-started-in">
 
-                <?php do_action('bbp_theme_after_topic_title'); ?>
+                    <?php printf( __( 'in <a href="%1$s"><b>%2$s</b></a>', 'evolve' ), bbp_get_forum_permalink( bbp_get_topic_forum_id() ), bbp_get_forum_title( bbp_get_topic_forum_id() ) ); ?>
 
-            </div>
-        </div><!-- .bbp-topic-title -->
+                </span>
 
-        <div class="bbp-reply-entry">
+			<?php do_action( 'bbp_theme_after_topic_started_in' );
 
-            <?php
-            do_action('bbp_theme_before_topic_content');
+		endif; ?>
 
-            bbp_topic_content();
+    </p>
 
-            do_action('bbp_theme_after_topic_content');
-            ?>
+	<?php do_action( 'bbp_theme_after_topic_meta' );
 
-        </div>
+	bbp_topic_row_actions(); ?>
 
-        <div class="bbp-arrow"></div>
-
-    </div><!-- .bbp-topic-content -->
-
-</div><!-- #post-<?php bbp_topic_id(); ?> -->
+</div>

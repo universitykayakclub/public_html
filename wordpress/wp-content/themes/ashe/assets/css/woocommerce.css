@@ -9,8 +9,8 @@
 }
 
 .woocommerce div.product div.images .flex-control-thumbs li {
-    width: calc((100% - 15px) / 4);
-    width: -width-calc((100% - 15px) / 4);
+    width: calc((100% - 15px) / 4 - 1px);
+    width: -width-calc((100% - 15px) / 4 - 1px);
     margin-top: 5px;
     margin-right: 5px;
 }
@@ -131,19 +131,19 @@ a.added_to_cart.wc-forward {
 3.0 Inputs, Buttons
 --------------------------------------------------------------*/
 
-#page-content .woocommerce textarea,
-#page-content .woocommerce select,
-#page-content .woocommerce input[type="tel"],
-#page-content .woocommerce input[type="text"],
-#page-content .woocommerce input[type="email"],
-#page-content .woocommerce input[type="password"] {
+.page-content .woocommerce textarea,
+.page-content .woocommerce select,
+.page-content .woocommerce input[type="tel"],
+.page-content .woocommerce input[type="text"],
+.page-content .woocommerce input[type="email"],
+.page-content .woocommerce input[type="password"] {
     padding: 10px;
     border-width: 1px;
     border-style: solid;
 }
 
-#page-content .woocommerce input[type="number"],
-.woocommerce #page-content input[type="number"] {
+.page-content .woocommerce input[type="number"],
+.woocommerce .page-content input[type="number"] {
     border-width: 1px;
     border-style: solid;
 }
@@ -226,8 +226,8 @@ a.added_to_cart.wc-forward {
 4.0 Nicks CSS
 --------------------------------------------------------------*/
 
-.woocommerce #page-content ul.products li.product .button,
-#page-content .woocommerce ul.products li.product .button {
+.woocommerce .page-content ul.products li.product .button,
+.page-content .woocommerce ul.products li.product .button {
     text-transform: uppercase;
     padding: 12px 17px;
     font-weight: bold;
@@ -482,7 +482,7 @@ a.added_to_cart.wc-forward {
 .woocommerce ul.products li.product,
 .woocommerce-page ul.products li.product {
     margin: 0 2% 2.992em 0;
-    width: 32%;
+    width: 32% !important;
     text-align: center;
 }
 
@@ -496,8 +496,8 @@ a.added_to_cart.wc-forward {
     margin-right: auto;
 }
 
-.woocommerce #page-content ul.products li.product .button,
-#page-content .woocommerce ul.products li.product .button {
+.woocommerce .page-content ul.products li.product .button,
+.page-content .woocommerce ul.products li.product .button {
     background-color: transparent!important;
     border-style: solid;
     border-width: 1px;
@@ -505,19 +505,19 @@ a.added_to_cart.wc-forward {
     -webkit-border-radius: 0;
 }
 
-#page-content .woocommerce input.button,
-#page-content .woocommerce a.button,
-#page-content .woocommerce a.button.alt,
-#page-content .woocommerce button.button.alt,
-#page-content .woocommerce input.button.alt,
-#page-content .woocommerce #respond input#submit.alt,
-.woocommerce #page-content .widget_price_filter .button,
-.woocommerce #page-content .woocommerce-message .button,
-.woocommerce #page-content a.button.alt,
-.woocommerce #page-content button.button.alt,
-.woocommerce #page-content #respond input#submit,
-.woocommerce #page-content .woocommerce-message .button,
-.woocommerce-page #page-content .woocommerce-message .button {
+.page-content .woocommerce input.button,
+.page-content .woocommerce a.button,
+.page-content .woocommerce a.button.alt,
+.page-content .woocommerce button.button.alt,
+.page-content .woocommerce input.button.alt,
+.page-content .woocommerce #respond input#submit.alt,
+.woocommerce .page-content .widget_price_filter .button,
+.woocommerce .page-content .woocommerce-message .button,
+.woocommerce .page-content a.button.alt,
+.woocommerce .page-content button.button.alt,
+.woocommerce .page-content #respond input#submit,
+.woocommerce .page-content .woocommerce-message .button,
+.woocommerce-page .page-content .woocommerce-message .button {
     width: auto;
     padding: 13px;
     border: none;
@@ -544,40 +544,40 @@ a.added_to_cart.wc-forward {
     float: none;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li {
+.woocommerce .page-content nav.woocommerce-pagination ul li {
     margin-right: -1px;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a,
-.woocommerce #page-content nav.woocommerce-pagination ul li span.current {
+.woocommerce .page-content nav.woocommerce-pagination ul li a,
+.woocommerce .page-content nav.woocommerce-pagination ul li span.current {
     display: inline-block;
     padding: 14px 15px;
     font-weight: bold;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.prev,
-.woocommerce #page-content nav.woocommerce-pagination ul li a.next {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.prev,
+.woocommerce .page-content nav.woocommerce-pagination ul li a.next {
     position: absolute;
     top: 0;
     text-indent: -15px;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.prev {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.prev {
     left: 0;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.next {
+.woocommerce .page-content nav.woocommerce-pagination ul li a.next {
     right: 0;
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.prev:after {
-    font-family: FontAwesome;
-    content: "\f177";
+.woocommerce .page-content nav.woocommerce-pagination ul li a.prev:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f060";
 }
 
-.woocommerce #page-content nav.woocommerce-pagination ul li a.next:after {
-    font-family: FontAwesome;
-    content: "\f178";
+.woocommerce .page-content nav.woocommerce-pagination ul li a.next:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f061";
 }
 
 .woocommerce-ordering select {

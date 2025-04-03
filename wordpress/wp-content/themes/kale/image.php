@@ -23,9 +23,9 @@ $kale_sidebar_size = kale_get_option('kale_sidebar_size');
 
     <!-- Main Column -->
     <?php if($kale_posts_sidebar == 1) { ?>
-    <div class="main-column <?php if($kale_sidebar_size == 0) { ?> col-md-8 <?php } else { ?> col-md-9 <?php } ?>">
+    <div class="main-column <?php if($kale_sidebar_size == 0) { ?> col-md-8 <?php } else { ?> col-md-9 <?php } ?>" role="main">
     <?php } else { ?>
-    <div class="main-column col-md-12">
+    <div class="main-column col-md-12" role="main">
     <?php } ?>
     
         <!-- Post Content -->
@@ -53,12 +53,14 @@ $kale_sidebar_size = kale_get_option('kale_sidebar_size');
         <!-- /Post Content -->
         
         <hr />
-        
-        <div class="pagination-post">
-            <div class="previous_post"><?php previous_image_link( false, __( 'Previous Image', 'kale' ) ); ?></div>
-            <div class="next_post"><?php next_image_link( false, __( 'Next Image', 'kale' ) ); ?></div>
-        </div>
-        
+
+        <?php kale_pagination('null', [], function(){ ?>
+            <div class="pagination-post">
+                <div class="previous_post"><?php previous_image_link( false, __( 'Previous Image', 'kale' ) ); ?></div>
+                <div class="next_post"><?php next_image_link( false, __( 'Next Image', 'kale' ) ); ?></div>
+            </div>
+        <?php }); ?>
+
         <!-- Post Comments -->
         <?php if ( comments_open() ) : ?>
         <hr />

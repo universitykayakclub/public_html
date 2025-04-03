@@ -10,83 +10,75 @@
  * happen. When this occurs the version of the template file will be bumped and
  * the readme will list any important changes.
  *
- * @see     https://docs.woothemes.com/document/template-structure/
- * @author  WooThemes
+ * @see     https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce/Templates
- * @version 3.0.0
+ * @version 3.6.0
  */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
-}
+defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-// Ensure visibility
+// Ensure visibility.
 if ( empty( $product ) || ! $product->is_visible() ) {
-    return;
+	return;
 }
 ?>
-<li <?php post_class(); ?>>
 
-    <?php do_action('woocommerce_before_shop_loop_item'); ?>
+<div <?php wc_product_class( 'card text-center', $product ); ?>>
 
-    <span class="product-images">
+	<?php
+	/**
+	 * Hook: woocommerce_before_shop_loop_item.
+	 *
+	 * @hooked woocommerce_template_loop_product_link_open - 10
+	 */
+	do_action( 'woocommerce_before_shop_loop_item' ); ?>
 
-        <?php
-        /**
-         * woocommerce_before_shop_loop_item_title hook
-         *
-         * @hooked woocommerce_show_product_loop_sale_flash - 10
-         * @hooked woocommerce_template_loop_product_thumbnail - 10
-         */
-        do_action('woocommerce_before_shop_loop_item_title');
-        ?>
+    <div class="product-images">
 
-    </span>
+		<?php
+		/**
+	 * Hook: woocommerce_before_shop_loop_item_title.
+		 *
+		 * @hooked woocommerce_show_product_loop_sale_flash - 10
+		 * @hooked woocommerce_template_loop_product_thumbnail - 10
+		 */
+		do_action( 'woocommerce_before_shop_loop_item_title' );
+		?>
 
-    <div class="product-details">
+    </div>
 
-        <div class="product-details-container">
+    <div class="card-body">
 
-            <?php
-            /**
-             * woocommerce_shop_loop_item_title hook
-             *
-             * @hooked woocommerce_template_loop_product_title - 10
-             */
-            //we are not using this hook in Evolve Plus Theme, because the title produced is not a link, 
-            //we are using the following at line 79 <h3 class="product-title"><a...</a></h3>
-            //do_action( 'woocommerce_shop_loop_item_title' );
-            ?>
+		<?php
+		/**
+		 * Hook: woocommerce_shop_loop_item_title.
+		 *
+		 * @hooked woocommerce_template_loop_product_title - 10
+		 */
+		do_action( 'woocommerce_shop_loop_item_title' ); ?>
 
-            <h3 class="product-title"><span><?php the_title(); ?></span></h3>
+		<?php
+		/**
+		 * Hook: woocommerce_after_shop_loop_item_title.
+		 *
+		 * @hooked woocommerce_template_loop_rating - 5
+		 * @hooked woocommerce_template_loop_price - 10
+		 */
+		do_action( 'woocommerce_after_shop_loop_item_title' );
+		?>
 
-            <div class="clearfix">
+    </div>
 
-                <?php
-                /**
-                 * woocommerce_after_shop_loop_item_title hook
-                 *
-                 * @hooked woocommerce_template_loop_rating - 5
-                 * @hooked woocommerce_template_loop_price - 10
-                 */
-                do_action('woocommerce_after_shop_loop_item_title');
-                ?>
+	<?php
+	/**
+	 * Hook: woocommerce_after_shop_loop_item.
+	 *
+	 * @hooked woocommerce_template_loop_product_link_close - 5
+	 * @hooked woocommerce_template_loop_add_to_cart - 10
+	 */
+	do_action( 'woocommerce_after_shop_loop_item' );
+	?>
 
-            </div>
-
-        </div>
-
-    </div>	
-
-    <?php
-    /**
-     * woocommerce_after_shop_loop_item hook
-     *
-     * @hooked woocommerce_template_loop_add_to_cart - 10
-     */
-    do_action('woocommerce_after_shop_loop_item');
-    ?>
-
-</li>
+</div>

@@ -47,6 +47,6 @@
 
 	?>
 
-</div><!-- #page-content -->
+</div><!-- .page-content -->
 
 <?php get_footer(); ?>

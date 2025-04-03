@@ -16,9 +16,6 @@ function ashe_customize_register( $wp_customize ) {
 	// select
 	function ashe_sanitize_select( $input, $setting ) {
 		
-		// check for slug
-		$input = sanitize_key( $input );
-		
 		// get all select options
 		$options = $setting->manager->get_control( $setting->id )->choices;
 		
@@ -33,7 +30,11 @@ function ashe_customize_register( $wp_customize ) {
 		$number = absint( $number );
 
 		// return default if not integer
-		return ( $number ? $number : $setting->default );
+		if ( $setting->id === 'ashe_options[featured_slider_amount]' ) {
+			return ( $number < 6 ? $number : $setting->default );
+		} else {
+			return ( $number ? $number : $setting->default );
+		}
 
 	}
 
@@ -78,11 +79,15 @@ function ashe_customize_register( $wp_customize ) {
 	function ashe_checkbox_control( $section, $id, $name, $transport, $priority ) {
 		global $wp_customize;
 
-		if ( $section !== 'header_image' ) {
+		if ( $section !== 'title_tagline' && $section !== 'header_image' ) {
 			$section_id = 'ashe_'. $section;
 		} else {
 			$section_id = $section;
 		}
+
+		if ( $id === 'merge_menu' ) {
+			$section_id = 'ashe_responsive';
+		} 
 
 		$wp_customize->add_setting( 'ashe_options['. $section .'_'. $id .']', array(
 			'default'	 => ashe_options( $section .'_'. $id),
@@ -273,8 +278,8 @@ function ashe_customize_register( $wp_customize ) {
 			new WP_Customize_Cropped_Image_Control( $wp_customize, 'ashe_options['. $section .'_'. $id .']', array(
 				'label'    		=> $name,
 				'section'  		=> 'ashe_'. $section,
-				'flex_width'  	=> false,
-				'flex_height' 	=> false,
+				'flex_width'  	=> true,
+				'flex_height' 	=> true,
 				'width'       	=> $width,
 				'height'      	=> $height,
 				'priority' 		=> $priority
@@ -295,6 +300,74 @@ function ashe_customize_register( $wp_customize ) {
 		}
 	}
 
+	// class Ashe_Customize_Feature_Request_Link extends WP_Customize_Control {
+	// 	public $type = 'new_features';
+
+	// 	public function render_content() {
+	// 		echo '<a href="https://wp-royal-themes.frill.co/b/6m56290z/feature-ideas" target="_blank">Request or Vote for the New Feature</a>';
+	// 	}
+	// }
+
+		/**
+		 * Create our upsell section.
+		 * Escape your URL in the Customizer using esc_url().
+		 *
+		 * @since unknown
+		 */
+
+	class Ashe_Feature_Request_Section extends WP_Customize_Section {
+		/**
+		 * Set type.
+		 *
+		 * @var public $type
+		 */
+		public $type = 'ashe_new_features';
+
+		/**
+		 * Set pro URL.
+		 *
+		 * @var public $pro_url
+		 */
+		public $feature_url = '';
+
+		/**
+		 * Set pro text.
+		 *
+		 * @var public $pro_text
+		 */
+		public $feature_text = '';
+
+		/**
+		 * Set ID.
+		 *
+		 * @var public $id
+		 */
+		public $id = '';
+
+		/**
+		 * Send variables to json.
+		 */
+		public function json() {
+			$json = parent::json();
+			$json['feature_text'] = $this->feature_text;
+			$json['feature_url']  = esc_url( $this->feature_url );
+			$json['id'] = $this->id;
+			return $json;
+		}
+
+		/**
+		 * Render content.
+		 */
+		protected function render_template() {
+			?>
+			<li id="accordion-section-{{ data.id }}" class="accordion-section control-section control-section-{{ data.type }} cannot-expand control-section-default">
+				<h3 class="accordion-section-title"><a href="{{{ data.feature_url }}}" target="_blank"><?php echo esc_html__('Request a New Feature', 'ashe') ?></a></h3>
+			</li>
+			<?php
+		}
+	}
+	
+
 	// Pro Version Links
 	class Ashe_Customize_Pro_Version_Links extends WP_Customize_Control {
 		public $type = 'pro_links';
@@ -305,27 +378,65 @@ function ashe_customize_register( $wp_customize ) {
 				<li class="customize-control">
 					<h3><?php esc_html_e( 'Upgrade', 'ashe' ); ?> <span>*</span></h3>
 					<p><?php esc_html_e( 'There are lots of reasons to upgrade to Pro version. Unlimited custom Colors, rich Typography options, multiple variation of Blog Feed layout and way much more. Also Premium Support included.', 'ashe' ); ?></p>
-					<a href="<?php echo esc_url('http://wp-royal.com/themes/ashe/customizer/free/upgrade-ashe-pro.html?ref=ashe-free-customizer-about-section-buypro'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Get Ashe Pro', 'ashe' ); ?></a>
-				</li>
-				<li class="customize-control">
-					<h3><?php esc_html_e( 'Documentation', 'ashe' ); ?></h3>
-					<p><?php esc_html_e( 'Read how to customize the theme, set up widgets, and learn all the possible options available to you.', 'ashe' ); ?></p>
-					<a href="<?php echo esc_url('http://wp-royal.com/themes/ashe/docs/?ref=ashe-free-customizer-about-section-docs-btn/'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Documentation', 'ashe' ); ?></a>
+					<a href="<?php echo esc_url('https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-customizer-about-section-buypro'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Get Ashe Pro', 'ashe' ); ?></a>
 				</li>
 				<li class="customize-control">
 					<h3><?php esc_html_e( 'Support', 'ashe' ); ?></h3>
-					<p><?php esc_html_e( 'For Ashe theme related questions feel free to post on our support forums. But firstly please ', 'ashe' ); ?><a href="<?php echo esc_url('http://wp-royal.com/wp-login.php?action=register'); ?>" target="_blank"><?php esc_html_e( 'Register on Support Forums', 'ashe' ); ?></a></p>
-					<a href="<?php echo esc_url('https://wp-royal.com/support-ashe-free/?ref=ashe-free-customizer-about-section-support-forum-btn/'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Support', 'ashe' ); ?></a>
+					<p><?php esc_html_e( 'If you have any kind of theme related questions, feel free to ask.', 'ashe' ); ?></p>
+					<a href="<?php echo esc_url(admin_url('themes.php?page=about-ashe&tab=ashe_tab_4')); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Contact Us', 'ashe' ); ?></a>
 				</li>
 				<li class="customize-control">
-					<h3><?php esc_html_e( 'Demo Content', 'ashe' ); ?></h3>
-					<p><?php esc_html_e( 'You can download and import this demo file to get same content as shown on our website. For more details please read theme documentation.', 'ashe' ); ?></p>
-					<a href="<?php echo esc_url('http://wp-royal.com/themes/ashe/democontent/ashe_free_demo_content.html?ref=ashe-free-customizer-about-section-demoxml-btn'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Download Demo Content', 'ashe' ); ?></a>
+					<h3><?php esc_html_e( 'Demo Import / Getting Started', 'ashe' ); ?></h3>
+					<p><?php esc_html_e( 'All you need for startup: Demo Import, Video Tutorials and more. To see what Ashe theme can offer, please visit a ', 'ashe' ); ?><a href="<?php echo esc_url('https://ashe-free.wp-royal-themes.com/demo/?ref=ashe-free-customizer-about-section-get-started-btn/'); ?>" target="_blank"><?php esc_html_e( 'Demo Preview Page.', 'ashe' ); ?></a></p>
+					<a href="<?php echo esc_url(admin_url('themes.php?page=about-ashe')); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Get Started', 'ashe' ); ?></a>
+				</li>
+				<li class="customize-control">
+					<h3><?php esc_html_e( 'Documentation', 'ashe' ); ?></h3>
+					<p>
+					<?php 
+						$theme_data	 = wp_get_theme();
+						/* translators: %s theme name */
+						printf( esc_html__( 'Need more details? Please check our full documentation for detailed information on how to use %s.', 'ashe' ), esc_html( $theme_data->Name ) );
+					?>
+					</p>
+					<a href="<?php echo esc_url('https://wp-royal-themes.com/themes/ashe/docs/?ref=ashe-free-customizer-about-section-docs-btn/'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Documentation', 'ashe' ); ?></a>
+				</li>
+				<li class="customize-control">
+					<h3><?php esc_html_e( 'Predefined Styles', 'ashe' ); ?></h3>
+					<p>
+					<?php /* translators: %s link */
+						printf( __( 'Ashe Pro\'s powerful setup allows you to easily create unique looking sites. Here are a few included examples that can be installed with one click in the Pro Version. More details in the <a href="%s" target="_blank" >Theme Documentation</a>', 'ashe' ), esc_url('https://wp-royal-themes.com/themes/ashe/docs/?ref=ashe-free-backend-about-predefined-styles#predefined') );
+					?>
+					</p>
+					<a href="<?php echo admin_url('themes.php?page=about-ashe#ashe-predefined-styles'); ?>" class="button button-primary widefat"><?php esc_html_e( 'Predefined Styles', 'ashe' ); ?></a>
+				</li>
+				<li class="customize-control">
+					<h3><?php esc_html_e( 'Changelog', 'ashe' ); ?></h3>
+					<p><?php esc_html_e( 'Want to get the gist on the latest theme changes? Just consult our changelog below to get a taste of the recent fixes and features implemented.', 'ashe' ); ?></p>
+					<a href="<?php echo esc_url('https://wp-royal-themes.com/ashe-free-changelog/?ref=ashe-free-customizer-about-section-changelog'); ?>" target="_blank" class="button button-primary widefat"><?php esc_html_e( 'Changelog', 'ashe' ); ?></a>
 				</li>
 			</ul>
 			<?php
 		}
-	}	
+	}
+
+	// Control Note
+	class Ashe_Customize_Control_Note extends WP_Customize_Control {
+		public $type = 'control_note';
+
+		public function render_content() {
+			echo '<span><strong>'. esc_html__( 'Please Note: ', 'ashe' ) .'</strong>'. esc_html( $this->label ) .'</span>';
+		}
+	}
+
+	// Control Divider
+	class Ashe_Customize_Control_Divider extends WP_Customize_Control {
+		public $type = 'control_divider';
+
+		public function render_content() {
+			echo '<hr>';
+		}
+	}
 
 
 
@@ -354,6 +465,107 @@ function ashe_customize_register( $wp_customize ) {
 		)
 	);
 
+/*
+** Feature Request =====
+*/
+
+	if ( method_exists( $wp_customize, 'register_section_type' ) ) {
+		$wp_customize->register_section_type( 'Ashe_Feature_Request_Section' );
+	}
+
+	$wp_customize->add_section(
+		new Ashe_Feature_Request_Section(
+			$wp_customize,
+			'ashe_feature_request_section',
+			array(
+				'pro_text' => __( 'Request Feature', 'ashe' ),
+				'feature_url' => 'https://wp-royal-themes.frill.co/b/6m56290z/feature-ideas',
+				'capability' => 'edit_theme_options',
+				'priority' => 1,
+				'type' => 'ashe_new_features',
+			)
+		)
+	);
+
+
+/*
+** Skins =====
+*/
+
+	// add Skins section
+	$wp_customize->add_section( 'ashe_skins' , array(
+		'title'		 => esc_html__( 'Skins', 'ashe' ),
+		'priority'	 => 2,
+		'capability' => 'edit_theme_options'
+	) );
+
+	$skin_select = array(
+		'default' => esc_html__( 'Default', 'ashe' ),
+		'dark' => esc_html__( 'Dark', 'ashe' ),
+		'box' => esc_html__( 'Box', 'ashe' ),
+	);
+
+	// Skin Select
+	ashe_select_control( 'skins', 'select', esc_html__( 'Select Theme Skin', 'ashe' ), $skin_select, 'refresh', 1 );
+
+	// Pro Version
+	$wp_customize->add_setting( 'select_skins_note', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Control_Note ( $wp_customize,
+			'select_skins_note', array(
+				'section'	=> 'ashe_skins',
+				'type'		=> 'control_note',
+				'label' 	=> esc_html__( 'After activating non-default skin, you will NOT be able to take control over skin colors. These options are only available in the Ashe PRO.', 'ashe' ),
+				'priority'	=> 2
+			)
+		)
+	);
+
+	// Dark Mode Divider
+	$wp_customize->add_setting( 'dark_mode_divider', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Control_Divider ( $wp_customize,
+			'dark_mode_divider', array(
+				'section'	=> 'ashe_skins',
+				'type'		=> 'control_divider',
+				'priority'	=> 3
+			)
+		)
+	);
+
+	// Dark Mode
+	ashe_checkbox_control( 'skins', 'dark_mode', esc_html__( 'Show Dark Mode Switcher', 'ashe' ), 'refresh', 4 );
+
+	// Dark Mode Note
+	$wp_customize->add_setting( 'dark_mode_note', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Control_Note ( $wp_customize,
+			'dark_mode_note', array(
+				'section'	=> 'ashe_skins',
+				'type'		=> 'control_note',
+				'label' 	=> esc_html__( 'Switcher icon will be added to the right of the Navigation Menu. When the Dark Mode is enabled color controls will NOT work except Accent Color control. Dark Mode design reduces the light emitted by device screens while maintaining the minimum color contrast ratios required for readability.', 'ashe' ),
+				'priority'	=> 5
+			)
+		)
+	);
+
+	// Pro Version
+	$wp_customize->add_setting( 'pro_version_skins', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Pro_Version ( $wp_customize,
+			'pro_version_skins', array(
+				'section'	  => 'ashe_skins',
+				'type'		  => 'pro_options',
+				'label' 	  => esc_html__( 'Skins', 'ashe' ),
+				'description' => esc_html( 'https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-skin-customizer#!/ashe-pro-page-colors' ),
+				'priority'	  => 100
+			)
+		)
+	);
 
 /*
 ** Colors =====
@@ -362,7 +574,7 @@ function ashe_customize_register( $wp_customize ) {
 	// add Colors section
 	$wp_customize->add_section( 'ashe_colors' , array(
 		'title'		 => esc_html__( 'Colors', 'ashe' ),
-		'priority'	 => 1,
+		'priority'	 => 3,
 		'capability' => 'edit_theme_options'
 	) );
 
@@ -374,12 +586,12 @@ function ashe_customize_register( $wp_customize ) {
 	$wp_customize->get_setting( 'header_textcolor' )->transport  = 'postMessage';
 
 	// Header Background
-	ashe_color_control( 'colors', 'header_bg', esc_html__( 'Header Background Color', 'ashe' ), 'postMessage', 9 );
+	ashe_color_control( 'colors', 'header_bg', esc_html__( 'Header Background', 'ashe' ), 'postMessage', 9 );
 	
 	// Body Background
 	$wp_customize->get_control( 'background_color' )->section = 'ashe_colors';
 	$wp_customize->get_control( 'background_color' )->priority = 12;
-	$wp_customize->get_control( 'background_color' )->label = 'Body Background Color';
+	$wp_customize->get_control( 'background_color' )->label = 'Body Background';
 
 	$wp_customize->get_control( 'background_image' )->section = 'ashe_colors';
 	$wp_customize->get_control( 'background_image' )->priority = 15;
@@ -403,7 +615,8 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'ashe_colors',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Colors', 'ashe' ),
-				'description' => esc_html( 'wp-royal.com/themes/ashe/customizer/free/colors.html?ref=ashe-free-colors-customizer' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-colors-customizer#!/ashe-pro-page-colors' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=food&section=ashe_colors' ),
 				'priority'	  => 100
 			)
 		)
@@ -426,6 +639,15 @@ function ashe_customize_register( $wp_customize ) {
 
 	// Sticky Sidebar
 	ashe_checkbox_control( 'general', 'sidebar_sticky', esc_html__( 'Enable Sticky Sidebar', 'ashe' ), 'refresh', 5 );
+
+	// Page Layout Combinations
+	$page_layouts = array(
+		'col1-rsidebar' => esc_html__( '1 Column', 'ashe' ),
+		'list-rsidebar' => esc_html__( 'List Style', 'ashe' ),
+	);
+
+	// Blog Page Layout
+	ashe_select_control( 'general', 'home_layout', esc_html__( 'Blog Page', 'ashe' ), $page_layouts, 'refresh', 13 );
 
 	$boxed_width = array(
 		'full' 		=> esc_html__( 'Full', 'ashe' ),
@@ -465,7 +687,7 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'ashe_general',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Layout Options', 'ashe' ),
-				'description' => esc_html( 'wp-royal.com/themes/ashe/customizer/free/general-layouts.html?ref=ashe-free-general-layouts-customizer' ),
+				'description' => esc_html( 'https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-general-layouts-customizer#!/ashe-pro-page-layouts' ),
 				'priority'	  => 100
 			)
 		)
@@ -504,13 +726,33 @@ function ashe_customize_register( $wp_customize ) {
 	// Background Image Size
 	ashe_radio_control( 'header_image', 'bg_image_size', esc_html__( 'Background Image Size', 'ashe' ), $bg_image_size, 'refresh', 10 );
 
+	// Pro Version
+	$wp_customize->add_setting( 'pro_version_header', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Pro_Version ( $wp_customize,
+			'pro_version_header', array(
+				'section'	  => 'header_image',
+				'type'		  => 'pro_options',
+				'label' 	  => esc_html__( 'Header Options', 'ashe' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/ashe/customizer/free/header-image2.html?ref=ashe-free-header-customizer' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=lifestyle&section=header_image' ),
+				'priority'	  => 100
+			)
+		)
+	);
+
 
 /*
 ** Site Identity =====
 */
 
+
 	// Logo Width
 	ashe_number_absint_control( 'title_tagline', 'logo_width', esc_html__( 'Width', 'ashe' ), array( 'step' => '10' ), 'postMessage', 8 );
+
+	// SEO Title
+	ashe_checkbox_control( 'title_tagline', 'seo_title', esc_html__( 'Enable Hidden Title (h1 missing SEO issue)', 'ashe' ), 'refresh', 17 );
 
 	$wp_customize->get_control( 'custom_logo' )->transport = 'selective_refresh';
 
@@ -523,7 +765,8 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'title_tagline',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Logo Options', 'ashe' ),
-				'description' => esc_html( 'http://wp-royal.com/themes/ashe/customizer/free/typography-logo.html?ref=ashe-free-site-identity-customizer' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/ashe/customizer/free/typography-logo.html?ref=ashe-free-site-identity-customizer' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=typography-v2&section=ashe_typography' ),
 				'priority'	  => 50
 			)
 		)
@@ -559,6 +802,15 @@ function ashe_customize_register( $wp_customize ) {
 	// Show Sidebar Icon
 	ashe_checkbox_control( 'main_nav', 'show_sidebar', esc_html__( 'Show Sidebar Icon', 'ashe' ), 'refresh', 15 );
 
+	// Simple Header
+	ashe_checkbox_control( 'main_nav', 'simple_header', esc_html__( 'Show Simple Header', 'ashe' ), 'refresh', 16 );
+
+	// Mini Logo
+	ashe_image_control( 'main_nav', 'mini_logo', esc_html__( 'Logo Upload', 'ashe' ), 'refresh', 17 );
+
+	// Mini Logo Width
+	ashe_number_absint_control( 'main_nav', 'mini_logo_width', esc_html__( 'Logo Width', 'ashe' ), array( 'step' => '1' ), 'postMessage', 19 );
+
 
 /*
 ** Featured Slider =====
@@ -575,12 +827,75 @@ function ashe_customize_register( $wp_customize ) {
 	ashe_checkbox_control( 'featured_slider', 'label', esc_html__( 'Featured Slider', 'ashe' ), 'refresh', 1 );
 
 	$slider_display = array(
+		'front' => esc_html__( 'Front Page', 'ashe' ),
+		'blog' => esc_html__( 'Posts Page', 'ashe' ),
+		'both' => esc_html__( 'Front and Posts Pages', 'ashe' ),
+	);
+	 
+	// Slider Location
+	ashe_select_control( 'featured_slider', 'location', esc_html__( 'Display Slider on', 'ashe' ), $slider_display, 'refresh', 2 );
+
+	$slider_source = array(
+		'custom' => esc_html__( 'Custom', 'ashe' ),
+		'posts' => esc_html__( 'Posts', 'ashe' ),
+	);
+	 
+	// Source
+	ashe_select_control( 'featured_slider', 'source', esc_html__( 'Source', 'ashe' ), $slider_source, 'refresh', 3 );
+
+	// Repeater
+	$wp_customize->add_setting( 'featured_slider_repeater', array(
+		'sanitize_callback' => 'customizer_repeater_sanitize',
+         'default' => json_encode( array(
+	         	array(
+	         		'image_url' => '',
+	         		'title' => 'Slide 1 Title',
+	         		'text' => 'Slide 1 Description. Some lorem ipsum dolor sit amet text',
+	         		'link' => '',
+	         		'btn_text' => 'Button 1',
+	         		'checkbox' => '0',
+	         		'id' => 'customizer_repeater_56d7ea7f40af1'
+	         	),
+	         	array(
+	         		'image_url' => '',
+	         		'title' => 'Slide 2 Title',
+	         		'text' => 'Slide 2 Description. Some lorem ipsum dolor sit amet text',
+	         		'link' => '',
+	         		'btn_text' => 'Button 2',
+	         		'checkbox' => '0',
+	         		'id' => 'customizer_repeater_56d7ea7f40af2'
+	         	),
+	         	array(
+	         		'image_url' => '',
+	         		'title' => 'Slide 3 Title',
+	         		'text' => 'Slide 3 Description. Some lorem ipsum dolor sit amet text',
+	         		'link' => '',
+	         		'btn_text' => 'Button 3',
+	         		'checkbox' => '0',
+	         		'id' => 'customizer_repeater_56d7ea7f40af3'
+	         	),
+            ) )
+	));
+
+	$wp_customize->add_control( new Customizer_Repeater( $wp_customize, 'featured_slider_repeater', array(
+		'label'   => esc_html__( 'Slider Item','ashe') ,
+		'section' => 'ashe_featured_slider',
+		'customizer_repeater_image_control' => true,
+		'customizer_repeater_title_control' => true,
+		'customizer_repeater_text_control' => true,
+		'customizer_repeater_btn_text_control' => true,
+		'customizer_repeater_link_control' => true,
+		'customizer_repeater_checkbox_control' => true,
+		'priority' => 4,
+	) ) );
+
+	$slider_display = array(
 		'all' 		=> 'All Posts',
 		'category' 	=> 'by Post Category'
 	);
 	 
 	// Display
-	ashe_select_control( 'featured_slider', 'display', esc_html__( 'Display Posts', 'ashe' ), $slider_display, 'refresh', 2 );
+	ashe_select_control( 'featured_slider', 'display', esc_html__( 'Display Posts', 'ashe' ), $slider_display, 'refresh', 5 );
 
 	$slider_cats = array();
 
@@ -589,12 +904,13 @@ function ashe_customize_register( $wp_customize ) {
 	}
 	 
 	// Category
-	ashe_select_control( 'featured_slider', 'category', esc_html__( 'Select Category', 'ashe' ), $slider_cats, 'refresh', 3 );
+	ashe_select_control( 'featured_slider', 'category', esc_html__( 'Select Category', 'ashe' ), $slider_cats, 'refresh', 6 );
 
 	// Amount
 	ashe_number_absint_control( 'featured_slider', 'amount', esc_html__( 'Number of Slides', 'ashe' ), array( 'step' => '1', 'max' => '5' ), 'refresh', 10 );
 
-	$slider_culumns = array( 'step' => '1', 'min' => '1', 'max' => '4' );
+	// Exclude Images
+	ashe_checkbox_control( 'featured_slider', 'exc_images', esc_html__( 'Exclude Slides without Images', 'ashe' ), 'refresh', 20 );
 
 	// Navigation
 	ashe_checkbox_control( 'featured_slider', 'navigation', esc_html__( 'Show Navigation Arrows', 'ashe' ), 'refresh', 25 );
@@ -611,7 +927,7 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'ashe_featured_slider',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Slider Options ', 'ashe' ),
-				'description' => esc_html( 'wp-royal.com/themes/ashe/customizer/free/featured-slider.html?ref=ashe-free-featured-slider-customizer' ),
+				'description' => esc_html( 'https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-general-layouts-customizer#!/ashe-pro-page-sliders' ),
 				'priority'	  => 100
 			)
 		)
@@ -631,6 +947,15 @@ function ashe_customize_register( $wp_customize ) {
 
 	// Featured Links
 	ashe_checkbox_control( 'featured_links', 'label', esc_html__( 'Featured Links', 'ashe' ), 'refresh', 1 );
+
+	$featured_links_display = array(
+		'front' => esc_html__( 'Front Page', 'ashe' ),
+		'blog' => esc_html__( 'Posts Page', 'ashe' ),
+		'both' => esc_html__( 'Front and Posts Pages', 'ashe' ),
+	);
+	 
+	// Slider Location
+	ashe_select_control( 'featured_links', 'location', esc_html__( 'Display Featured Links on', 'ashe' ), $featured_links_display, 'refresh', 2 );
 
 	// Link #1 Title
 	ashe_text_control( 'featured_links', 'title_1', esc_html__( 'Title', 'ashe' ), 'refresh', 9 );
@@ -659,6 +984,21 @@ function ashe_customize_register( $wp_customize ) {
 	// Link #3 Image
 	ashe_image_crop_control( 'featured_links', 'image_3', esc_html__( 'Image', 'ashe' ), 600, 340, 'refresh', 25 );
 
+	// Pro Version
+	$wp_customize->add_setting( 'pro_version_featured_links', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Pro_Version ( $wp_customize,
+			'pro_version_featured_links', array(
+				'section'	  => 'ashe_featured_links',
+				'type'		  => 'pro_options',
+				'label' 	  => esc_html__( 'Feat. Links Options ', 'ashe' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/ashe/customizer/free/featured-links.html?ref=ashe-free-featured-links' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=sample-v5&section=ashe_featured_links' ),
+				'priority'	  => 100
+			)
+		)
+	);
 
 /*
 ** Blog Page =====
@@ -688,20 +1028,41 @@ function ashe_customize_register( $wp_customize ) {
 	// Post Pagination
 	ashe_select_control( 'blog_page', 'post_pagination', esc_html__( 'Post Pagination', 'ashe' ), $post_pagination, 'refresh', 5 );
 
+	// Show Drop Caps
+	ashe_checkbox_control( 'blog_page', 'show_dropcaps', esc_html__( 'Show Drop Caps (First Big Letter)', 'ashe' ), 'refresh', 6 );
+
 	// Show Categories
-	ashe_checkbox_control( 'blog_page', 'show_categories', esc_html__( 'Show Categories', 'ashe' ), 'refresh', 6 );
+	ashe_checkbox_control( 'blog_page', 'show_categories', esc_html__( 'Show Categories', 'ashe' ), 'refresh', 7 );
 
 	// Show Date
-	ashe_checkbox_control( 'blog_page', 'show_date', esc_html__( 'Show Date', 'ashe' ), 'refresh', 7 );
+	ashe_checkbox_control( 'blog_page', 'show_date', esc_html__( 'Show Date', 'ashe' ), 'refresh', 8 );
 
 	// Show Comments
 	ashe_checkbox_control( 'blog_page', 'show_comments', esc_html__( 'Show Comments', 'ashe' ), 'refresh', 9 );
 
-	// Show Drop Caps
-	ashe_checkbox_control( 'blog_page', 'show_dropcaps', esc_html__( 'Show Drop Caps', 'ashe' ), 'refresh', 11 );
-
 	// Show Author
-	ashe_checkbox_control( 'blog_page', 'show_author', esc_html__( 'Show Author', 'ashe' ), 'refresh', 16 );
+	ashe_checkbox_control( 'blog_page', 'show_author', esc_html__( 'Show Author', 'ashe' ), 'refresh', 13 );
+
+	// Show Facebook
+	ashe_checkbox_control( 'blog_page', 'show_facebook', esc_html__( 'Show Facebook', 'ashe' ), 'refresh', 17 );
+
+	// Show Twitter
+	ashe_checkbox_control( 'blog_page', 'show_twitter', esc_html__( 'Show Twitter', 'ashe' ), 'refresh', 19 );
+
+	// Show Pinterest
+	ashe_checkbox_control( 'blog_page', 'show_pinterest', esc_html__( 'Show Pinterest', 'ashe' ), 'refresh', 21 );
+
+	// Show WhatsApp
+	ashe_checkbox_control( 'blog_page', 'show_whatsapp', esc_html__( 'Show WhatsApp', 'ashe' ), 'refresh', 23 );
+
+	// Show Linkedin
+	ashe_checkbox_control( 'blog_page', 'show_linkedin', esc_html__( 'Show Linkedin', 'ashe' ), 'refresh', 25 );
+
+	// Show reddit
+	ashe_checkbox_control( 'blog_page', 'show_reddit', esc_html__( 'Show Reddit', 'ashe' ), 'refresh', 27 );
+
+	// Show Tumblr
+	ashe_checkbox_control( 'blog_page', 'show_tumblr', esc_html__( 'Show Tumblr', 'ashe' ), 'refresh', 29 );
 
 	$related_posts = array(
 		'none' 		=> esc_html__( 'None', 'ashe' ),
@@ -709,7 +1070,7 @@ function ashe_customize_register( $wp_customize ) {
 	);
 
 	// Related Posts Orderby
-	ashe_select_control( 'blog_page', 'related_orderby', esc_html__( 'Related Posts Display', 'ashe' ), $related_posts, 'refresh', 33 );
+	ashe_select_control( 'blog_page', 'related_orderby', esc_html__( 'Related Posts - Display', 'ashe' ), $related_posts, 'refresh', 33 );
 
 	// Pro Version
 	$wp_customize->add_setting( 'pro_version_blog_page', array(
@@ -720,7 +1081,7 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'ashe_blog_page',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Blog Options ', 'ashe' ),
-				'description' => esc_html( 'wp-royal.com/themes/ashe/customizer/free/blog-page.html?ref=ashe-free-blog-page-customizer' ),
+				'description' => esc_html( 'https://wp-royal-themes.com/themes/item-ashe-pro/?ref=ashe-free-general-layouts-customizer#!/ashe-pro-page-layouts' ),
 				'priority'	  => 100
 			)
 		)
@@ -738,6 +1099,9 @@ function ashe_customize_register( $wp_customize ) {
 		'priority'	 => 31,
 		'capability' => 'edit_theme_options'
 	) );
+
+	// Show Featured Image
+	ashe_checkbox_control( 'single_page', 'show_featured_image', esc_html__( 'Show Featured Image', 'ashe' ), 'refresh', 5 );
 
 	// Show Categories
 	ashe_checkbox_control( 'single_page', 'show_categories', esc_html__( 'Show Categories', 'ashe' ), 'refresh', 5 );
@@ -770,65 +1134,81 @@ function ashe_customize_register( $wp_customize ) {
 	) );
 	
 	// Social Window
-	ashe_checkbox_control( 'social_media', 'window', esc_html__( 'Show Social Icons in New Window', 'ashe' ), 'refresh', 1 );
+	ashe_checkbox_control( 'social_media', 'window', esc_html__( 'Open Social Links in New Window', 'ashe' ), 'refresh', 1 );
 
 	// Social Icons Array
 	$social_icons = array(
-		'facebook' 				=> '&#xf09a;',
-		'facebook-official'		=> '&#xf230;',
-		'facebook-square' 		=> '&#xf082;',
-		'twitter' 				=> '&#xf099;',
-		'twitter-square' 		=> '&#xf081;',
-		'google' 				=> '&#xf1a0;',
-		'google-plus' 			=> '&#xf0d5;',
-		'google-plus-official'	=> '&#xf2b3;',
-		'google-plus-square'	=> '&#xf0d4;',
-		'linkedin'				=> '&#xf0e1;',
-		'linkedin-square' 		=> '&#xf08c;',
-		'pinterest' 			=> '&#xf0d2;',
-		'pinterest-p' 			=> '&#xf231;',
-		'pinterest-square'		=> '&#xf0d3;',
-		'behance' 				=> '&#xf1b4;',
-		'behance-square'		=> '&#xf1b5;',
-		'tumblr' 				=> '&#xf173;',
-		'tumblr-square' 		=> '&#xf174;',
-		'reddit' 				=> '&#xf1a1;',
-		'reddit-alien' 			=> '&#xf281;',
-		'reddit-square' 		=> '&#xf1a2;',
-		'dribbble' 				=> '&#xf17d;',
-		'vk' 					=> '&#xf189;',
-		'skype' 				=> '&#xf17e;',
-		'film' 					=> '&#xf008;',
-		'youtube-play' 			=> '&#xf16a;',
-		'youtube' 				=> '&#xf167;',
-		'youtube-square' 		=> '&#xf166;',
-		'vimeo-square' 			=> '&#xf194;',
-		'soundcloud' 			=> '&#xf1be;',
-		'instagram' 			=> '&#xf16d;',
-		'flickr' 				=> '&#xf16e;',
-		'rss' 					=> '&#xf09e;',
-		'rss-square' 			=> '&#xf143;',
-		'heart' 				=> '&#xf004;',
-		'heart-o' 				=> '&#xf08a;',
-		'github' 				=> '&#xf09b;',
-		'github-alt' 			=> '&#xf113;',
-		'github-square' 		=> '&#xf092;',
-		'stack-overflow' 		=> '&#xf16c;',
-		'qq' 					=> '&#xf1d6;',
-		'weibo' 				=> '&#xf18a;',
-		'weixin' 				=> '&#xf1d7;',
-		'xing' 					=> '&#xf168;',
-		'xing-square' 			=> '&#xf169;',
-		'gamepad' 				=> '&#xf11b;',
-		'medium' 				=> '&#xf23a;',
-		'envelope' 				=> '&#xf0e0;',
-		'envelope-o' 			=> '&#xf003;',
-		'envelope-square ' 		=> '&#xf199;',
-		'etsy' 					=> '&#xf2d7;',
-		'snapchat' 				=> '&#xf2ab;',
-		'snapchat-ghost' 		=> '&#xf2ac;',
-		'snapchat-square'		=> '&#xf2ad;',
-		'meetup' 				=> '&#xf2e0;'
+		'facebook' 				=> 'Facebook 1',
+		'facebook-official'		=> 'Facebook 2',
+		'facebook-square' 		=> 'Facebook 3',
+		'twitter' 				=> 'Twitter 1',
+		'twitter-square' 		=> 'Twitter 2',
+		'x-twitter' 		=> 'Twitter 3',
+		'google' 				=> 'Google',
+		'linkedin'				=> 'Linkedin 1',
+		'linkedin-square' 		=> 'Linkedin 2',
+		'pinterest' 			=> 'Pinterest 1',
+		'pinterest-p' 			=> 'Pinterest 2',
+		'pinterest-square'		=> 'Pinterest 3',
+		'behance' 				=> 'Behance 1',
+		'behance-square'		=> 'Behance 2',
+		'tumblr' 				=> 'Tumblr 1',
+		'tumblr-square' 		=> 'Tumblr 2',
+		'reddit' 				=> 'Reddit 1',
+		'reddit-alien' 			=> 'Reddit 2',
+		'reddit-square' 		=> 'Reddit 3',
+		'dribbble' 				=> 'Dribbble',
+		'whatsapp' 				=> 'Whatsapp 1',
+		'square-whatsapp' 		=> 'Whatsapp 2',
+		'vk' 					=> 'vKontakte',
+		'telegram' 				=> 'Telegram',
+		'odnoklassniki' 		=> 'Odnoklassniki',
+		'skype' 				=> 'Skype',
+		'patreon' 				=> 'Patreon',
+		'film' 					=> 'Film',
+		'youtube-play' 			=> 'Youtube 1',
+		'youtube-square' 		=> 'Youtube 2',
+		'vimeo-square' 			=> 'Vimeo',
+		'twitch' 				=> 'Twitch',
+		'discord' 				=> 'Discord',
+		'kickstarter' 			=> 'KickStarter 1',
+		'kickstarter-k' 		=> 'KickStarter 2',
+		'soundcloud' 			=> 'Soundcloud',
+		'instagram' 			=> 'Instagram',
+		'info' 					=> 'Info 1',
+		'info-circle' 			=> 'Info 2',
+		'flickr' 				=> 'Flickr',
+		'rss' 					=> 'RSS 1',
+		'rss-square' 			=> 'RSS 2',
+		'heart' 				=> 'Heart 1',
+		'heart-o' 				=> 'Heart 2',
+		'github' 				=> 'Github 1',
+		'github-alt' 			=> 'Github 2',
+		'github-square' 		=> 'Github 3',
+		'goodreads-g'			=> 'Goodreads',
+		'stack-overflow' 		=> 'Stack Overflow',
+		'qq' 					=> 'QQ',
+		'weibo' 				=> 'Weibo',
+		'weixin' 				=> 'Weixin',
+		'xing' 					=> 'Xing 1',
+		'xing-square' 			=> 'Xing 2',
+		'gamepad' 				=> 'Gamepad',
+		'medium' 				=> 'Medium',
+		'mastodon' 				=> 'Mastodon',
+		'map-marker' 			=> 'Map Marker',
+		'envelope' 				=> 'Envelope 1',
+		'envelope-o' 			=> 'Envelope 2',
+		'envelope-square ' 		=> 'Envelope 3',
+		'etsy' 					=> 'Etsy',
+		'snapchat' 				=> 'Snapchat 1',
+		'snapchat-square'		=> 'Snapchat 2',
+		'tiktok'				=> 'Tiktok',
+		'spotify'				=> 'Spotify',
+		'deviantart'			=> 'DeviantArt',
+		'shopping-cart'			=> 'Cart',
+		'meetup' 				=> 'Meetup',
+		'cc-paypal' 			=> 'PayPal',
+		'credit-card' 			=> 'Credit Card',
 	);
 
 	// Social #1 Icon
@@ -857,6 +1237,53 @@ function ashe_customize_register( $wp_customize ) {
 
 
 /*
+** Typography =====
+*/
+	// add Typography section
+	$wp_customize->add_section( 'ashe_typography' , array(
+		'title'		 => esc_html__( 'Typography', 'ashe' ),
+		'priority'	 => 34,
+		'capability' => 'edit_theme_options'
+	) );
+
+	$font_family = array(
+		'Open+Sans' => esc_html__( 'Open Sans', 'ashe' ),
+		'Rokkitt' 	=> esc_html__( 'Rokkitt', 'ashe' ),
+		'Kalam' 	=> esc_html__( 'Kalam', 'ashe' )
+	);
+
+	// Logo Font Family
+	ashe_select_control( 'typography', 'logo_family', esc_html__( 'Font Family', 'ashe' ), $font_family, 'refresh', 1 );
+
+	// Navigation Font Family
+	ashe_select_control( 'typography', 'nav_family', esc_html__( 'Font Family', 'ashe' ), $font_family, 'refresh', 5 );
+
+	// Italic
+	ashe_checkbox_control( 'typography', 'nav_italic', esc_html__( 'Italic', 'ashe' ), 'postMessage', 7 );
+
+	// Uppercase
+	ashe_checkbox_control( 'typography', 'nav_uppercase', esc_html__( 'Uppercase', 'ashe' ), 'postMessage', 8 );
+
+
+	// Pro Version
+	$wp_customize->add_setting( 'pro_version_typography', array(
+		'sanitize_callback' => 'ashe_sanitize_custom_control'
+	) );
+	$wp_customize->add_control( new Ashe_Customize_Pro_Version ( $wp_customize,
+			'pro_version_typography', array(
+				'section'	  => 'ashe_typography',
+				'type'		  => 'pro_options',
+				'label' 	  => esc_html__( 'Typography Options', 'ashe' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/ashe/customizer/free/typography-logo.html?ref=ashe-free-typography-customizer' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=typography-v2&section=ashe_typography' ),
+				'priority'	  => 10
+			)
+		)
+	);
+
+
+
+/*
 ** Page Footer =====
 */
 
@@ -870,7 +1297,10 @@ function ashe_customize_register( $wp_customize ) {
 	$copyright_description = 'Enter <strong>$year</strong> to update the year automatically and <strong>$copy</strong> for the copyright symbol.<br><br>Example: $year Ashe Theme $copy.';
 
 	// Copyright
-	ashe_textarea_control( 'page_footer', 'copyright', esc_html__( 'Copyright', 'ashe' ), $copyright_description, 'refresh', 3 );
+	ashe_textarea_control( 'page_footer', 'copyright', esc_html__( 'Your Copyright Text', 'ashe' ), $copyright_description, 'refresh', 3 );
+
+	// Show Scroll-Top Button
+	ashe_checkbox_control( 'page_footer', 'show_scrolltop', esc_html__( 'Show Scroll-Top Button', 'ashe' ), 'refresh', 5 );
 
 	// Pro Version
 	$wp_customize->add_setting( 'pro_version_page_footer', array(
@@ -881,7 +1311,8 @@ function ashe_customize_register( $wp_customize ) {
 				'section'	  => 'ashe_page_footer',
 				'type'		  => 'pro_options',
 				'label' 	  => esc_html__( 'Footer Options', 'ashe' ),
-				'description' => esc_html( 'wp-royal.com/themes/ashe/customizer/free/page-footer.html?ref=ashe-free-page-footer-customizer' ),
+				// 'description' => esc_html( 'https://wp-royal-themes.com/themes/ashe/customizer/free/page-footer.html?ref=ashe-free-page-footer-customizer' ),
+				'description' => esc_html( 'https://ashe-pro.wp-royal-themes.com/wp-content/plugins/open-house-theme-options/redirect.php?multisite=typography-v2&section=ashe_page_footer' ),
 				'priority'	  => 100
 			)
 		)
@@ -901,7 +1332,45 @@ function ashe_customize_register( $wp_customize ) {
 
 	// Preloading Animation
 	ashe_checkbox_control( 'preloader', 'label', esc_html__( 'Preloading Animation', 'ashe' ), 'refresh', 1 );
+
+
+/*
+** Responsive =====
+*/
+
+	// add Responsive section
+	$wp_customize->add_section( 'ashe_responsive' , array(
+		'title'		  => esc_html__( 'Responsive', 'ashe' ),
+		'description' => esc_html__( 'These options will only apply to Mobile devices.', 'ashe' ),
+		'priority'	  => 50,
+		'capability'  => 'edit_theme_options'
+	) );
+
+
+	// Merge to Responsive Menu
+	ashe_checkbox_control( 'main_nav', 'merge_menu', esc_html__( 'Merge Top and Main Menus', 'ashe' ), 'refresh', 1 );
 	
+	// Featured Slider
+	ashe_checkbox_control( 'responsive', 'featured_slider', esc_html__( 'Show Featured Slider', 'ashe' ), 'refresh', 3 );
+
+	// Featured Links
+	ashe_checkbox_control( 'responsive', 'featured_links', esc_html__( 'Show Featured Links', 'ashe' ), 'refresh', 5 );
+
+	// Related Posts
+	ashe_checkbox_control( 'responsive', 'related_posts', esc_html__( 'Show Related Posts', 'ashe' ), 'refresh', 7 );
+
+	// Mobile Menu Icons Array
+	$mobile_menu_icons = array(
+		'chevron-down' 			 => 'Arrow',
+		'text' 					 => 'Text',
+	);
+
+	// Select Mobile Menu Icon
+	ashe_select_control( 'responsive', 'menu_icon', esc_html__( 'Select Mobile Menu Icon', 'ashe' ), $mobile_menu_icons, 'refresh', 9 );
+
+	// Mobile Menu Text
+	ashe_text_control( 'responsive', 'mobile_icon_text', esc_html__( 'Menu Button Text', 'ashe' ), 'refresh', 11 );
+
 
 }
 add_action( 'customize_register', 'ashe_customize_register' );
@@ -911,7 +1380,7 @@ add_action( 'customize_register', 'ashe_customize_register' );
 ** Bind JS handlers to instantly live-preview changes
 */
 function ashe_customize_preview_js() {
-	wp_enqueue_script( 'ashe-customize-preview', get_theme_file_uri( '/inc/customizer/js/customize-preview.js' ), array( 'customize-preview' ), '1.0', true );
+	wp_enqueue_script( 'ashe-customize-preview', get_theme_file_uri( '/inc/customizer/js/customize-preview.js' ), array( 'customize-preview' ), '1.1', true );
 }
 add_action( 'customize_preview_init', 'ashe_customize_preview_js' );
 
@@ -919,9 +1388,8 @@ add_action( 'customize_preview_init', 'ashe_customize_preview_js' );
 ** Load dynamic logic for the customizer controls area.
 */
 function ashe_panels_js() {
-	wp_enqueue_style( 'fontawesome', get_theme_file_uri( '/assets/css/font-awesome.css' ) );
+	wp_enqueue_style( 'fontawesome', get_theme_file_uri( '/assets/css/fontawesome.min.css' ), [], '6.5.1' );
 	wp_enqueue_style( 'ashe-customizer-ui-css', get_theme_file_uri( '/inc/customizer/css/customizer-ui.css' ) );
-	wp_enqueue_script( 'ashe-customize-controls', get_theme_file_uri( '/inc/customizer/js/customize-controls.js' ), array(), '1.0', true );
-
+	wp_enqueue_script( 'ashe-customize-controls', get_theme_file_uri( '/inc/customizer/js/customize-controls.js' ), array(), '1.2', true );
 }
 add_action( 'customize_controls_enqueue_scripts', 'ashe_panels_js' );

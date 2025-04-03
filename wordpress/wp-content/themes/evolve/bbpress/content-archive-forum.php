@@ -9,38 +9,35 @@
 
 <div id="bbpress-forums">
 
-    <?php
-    $evolve_breadcrumbs = evolve_get_option('evl_breadcrumbs', '1');
-    if ($evolve_breadcrumbs == "1"):
-        bbp_breadcrumb();
-        bbp_forum_subscription_link();
-    endif;
+	<?php bbp_forum_subscription_link( array(
+		'before'      => '<div class="post-meta text-right mb-4">',
+		'after'       => '</div>',
+		'subscribe'   => evolve_get_svg( 'rss' ) . esc_html__( 'Subscribe', 'evolve' ),
+		'unsubscribe' => evolve_get_svg( 'ok' ) . esc_html__( 'Subscribed', 'evolve' )
+	) );
 
-    if (bbp_allow_search()) :
-        ?>
+	if ( bbp_allow_search() ) : ?>
 
-        <div class="bbp-search-form">
+        <div class="search-full-width">
 
-            <?php bbp_get_template_part('form', 'search'); ?>
+			<?php bbp_get_template_part( 'form', 'search' ); ?>
 
-        </div>
+        </div><!-- .search-full-width -->
 
-        <?php
-    endif;
+	<?php endif;
 
-    do_action('bbp_template_before_forums_index');
+	do_action( 'bbp_template_before_forums_index' );
 
-    if (bbp_has_forums()) :
+	if ( bbp_has_forums() ) :
 
-        bbp_get_template_part('loop', 'forums');
+		bbp_get_template_part( 'loop', 'forums' );
 
-    else :
+	else :
 
-        bbp_get_template_part('feedback', 'no-forums');
+		bbp_get_template_part( 'feedback', 'no-forums' );
 
-    endif;
+	endif;
 
-    do_action('bbp_template_after_forums_index');
-    ?>
+	do_action( 'bbp_template_after_forums_index' ); ?>
 
 </div>

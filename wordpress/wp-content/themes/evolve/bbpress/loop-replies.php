@@ -5,56 +5,24 @@
  * @package bbPress
  * @subpackage Theme
  */
-do_action('bbp_template_before_replies_loop');
-?>
+do_action( 'bbp_template_before_replies_loop' ); ?>
 
+    <ol id="topic-<?php bbp_topic_id(); ?>-replies" class="comment-list bbp-replies">
 
-<div class="bbp-header">
+		<?php if ( bbp_thread_replies() ) :
 
-    <div class="bbp-reply-favs">
+			bbp_list_replies();
 
-        <?php
-        if (!bbp_show_lead_topic()) :
+		else :
 
-            bbp_user_favorites_link();
+			while ( bbp_replies() ) : bbp_the_reply();
 
-            bbp_user_subscribe_link();
+				bbp_get_template_part( 'loop', 'single-reply' );
 
-        else :
+			endwhile;
 
-            _e('Replies', 'evolve');
+		endif; ?>
 
-        endif;
-        ?>
+    </ol><!-- #topic-<?php bbp_topic_id(); ?>-replies -->
 
-    </div><!-- .bbp-reply-content -->
-
-</div><!-- .bbp-header -->
-<div class="clearfix"></div>
-
-<ul id="topic-<?php bbp_topic_id(); ?>-replies" class="forums bbp-replies">
-
-    <li class="bbp-body">
-
-        <?php
-        if (bbp_thread_replies()) :
-
-            bbp_list_replies();
-
-        else :
-
-            while (bbp_replies()) : bbp_the_reply();
-
-                bbp_get_template_part('loop', 'single-reply');
-
-            endwhile;
-
-        endif;
-        ?>
-
-    </li><!-- .bbp-body -->
-
-</ul><!-- #topic-<?php bbp_topic_id(); ?>-replies -->
-
-<?php
-do_action('bbp_template_after_replies_loop');
+<?php do_action( 'bbp_template_after_replies_loop' );

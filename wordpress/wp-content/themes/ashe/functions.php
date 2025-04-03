@@ -4,6 +4,7 @@
 ** Sets up theme defaults and registers support for various WordPress features
 */
 function ashe_setup() {
+
 	// Make theme available for translation
 	load_theme_textdomain( 'ashe', get_template_directory() . '/languages' );
 
@@ -47,8 +48,9 @@ function ashe_setup() {
 
 	// This theme uses wp_nav_menu() in two locations
 	register_nav_menus( array(
-		'top'	=> __( 'Top Menu', 'ashe' ),
-		'main' 	=> __( 'Main Menu', 'ashe' ),
+		'top'		=> __( 'Top Menu', 'ashe' ),
+		'main' 		=> __( 'Main Menu', 'ashe' ),
+		'footer' 	=> __( 'Footer Menu', 'ashe' ),
 	) );
 
 	// Switch default core markup for search form, comment form, and comments to output valid HTML5
@@ -59,6 +61,9 @@ function ashe_setup() {
 		'caption',
 	) );
 
+	// Gutenberg Embeds
+	add_theme_support( 'responsive-embeds' ); 
+
 	// WooCommerce
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'wc-product-gallery-zoom' );
@@ -66,27 +71,132 @@ function ashe_setup() {
 	add_theme_support( 'wc-product-gallery-slider' );
 
 	// Theme Activation Notice
-	global $pagenow;
-	
-	if ( is_admin() && ('themes.php' == $pagenow) && isset( $_GET['activated'] ) ) {
-		add_action( 'admin_notices', 'ashe_activation_notice' );
-	}
-	
+	add_action( 'admin_notices', 'ashe_activation_notice' );
+	add_action( 'admin_notices', 'ashe_classic_widgets_notice' );
+
+	// Add Image Sizes
+	ashe_add_image_sizes();
 }
 add_action( 'after_setup_theme', 'ashe_setup' );
 
-// Notice after Theme Activation
+
+/*
+** Notice after Theme Activation and Update.
+*/
 function ashe_activation_notice() {
-	echo '<div class="notice notice-success is-dismissible">';
-		echo '<p>'. esc_html__( 'Thank you for choosing Ashe! Now, we higly recommend you to visit our welcome page.', 'ashe' ) .'</p>';
-		echo '<p><a href="'. esc_url( admin_url( 'themes.php?page=about-ashe' ) ) .'" class="button button-primary">'. esc_html__( 'Get Started with Ashe', 'ashe' ) .'</a></p>';
-	echo '</div>';
+	if ( isset($_GET['page']) ) {
+		return;
+	}
+
+	global $pagenow;
+	global $current_user;
+
+	$user_id	 = $current_user->ID;
+	$theme_data	 = wp_get_theme();
+	$theme_vers	 = str_replace( '.', '_', $theme_data->get( 'Version' ) );
+
+	// Add the nonce to the dismiss button URL
+    $nonce = wp_create_nonce( esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers . '_notice_ignore_nonce' );
+	
+	// Sanitize the key by using sanitize_key() and sanitize other parameters as needed
+	$key = sanitize_key( $theme_data->get( 'TextDomain' ) . $theme_vers . '_notice_ignore' );
+	$dismiss_url = esc_url( add_query_arg(
+		[
+			$key      => '0',
+			'_wpnonce' => esc_html( $nonce ) // Ensure $nonce is escaped
+		],
+		admin_url() // Or another base URL if needed
+	) );
+
+
+	if ( ! get_user_meta( $user_id, esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers .'_notice_ignore' ) ) {
+
+		echo '<div class="notice notice-success ashe-activation-notice">';
+
+			printf( '<a href="%1$s" class="notice-dismiss dashicons dashicons-dismiss dashicons-dismiss-icon"></a>', $dismiss_url );
+		
+			echo '<p>';
+				/* translators: %1$s: theme name, %2$s link */
+				printf( __( 'Thank you for choosing %1$s! To fully take advantage of the best our theme can offer please make sure you visit our <a href="%2$s">Welcome page</a>', 'ashe' ), esc_html( $theme_data->Name ), esc_url( admin_url( 'themes.php?page=about-ashe' ) ) );
+			echo '</p>';
+
+			echo '<p><a href="'. esc_url( admin_url( 'themes.php?page=about-ashe' ) ) .'" class="button button-primary">';
+				/* translators: %s theme name */
+				printf( esc_html__( 'Get started with %s', 'ashe' ), esc_html( $theme_data->Name ) );
+			echo '</a></p>';
+
+		echo '</div>';
+
+	}
+}
+
+function ashe_notice_ignore() {
+	global $current_user;
+	$theme_data	 = wp_get_theme();
+	$user_id	 = $current_user->ID;
+	$theme_vers	 = str_replace( '.', '_', $theme_data->get( 'Version' ) );
+
+	/* If user clicks to ignore the notice, check the nonce before proceeding */
+    if (
+        isset( $_GET[ esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers . '_notice_ignore' ] ) &&
+        '0' == $_GET[ esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers . '_notice_ignore' ] &&
+        check_admin_referer( esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers . '_notice_ignore_nonce' )
+    ) {
+        add_user_meta( $user_id, esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers . '_notice_ignore', 'true', true );
+    }
+}
+add_action( 'admin_init', 'ashe_notice_ignore' );
+
+function ashe_erase_ignored_notice() {
+	global $current_user;
+	$theme_data	 = wp_get_theme();
+	$user_id	 = $current_user->ID;
+	$theme_vers	 = str_replace( '.', '_', $theme_data->get( 'Version' ) );
+	
+	delete_user_meta( $user_id, esc_html( $theme_data->get( 'TextDomain' ) ) . $theme_vers .'_notice_ignore' );
+}
+add_action('after_switch_theme', 'ashe_erase_ignored_notice');
+
+function ashe_admin_scripts() {
+	
+	// Theme Activation Notice
+	wp_enqueue_style( 'ashe-admin', get_theme_file_uri( '/assets/css/admin.css' ) );
+
+}
+add_action( 'admin_enqueue_scripts', 'ashe_admin_scripts' );
+
+
+/*
+** Notice for Classic Widgets Editor.
+*/
+function ashe_classic_widgets_notice() {
+	$screen = get_current_screen();
+
+	if ( ! $screen || 'widgets' !== $screen->base || file_exists(ABSPATH . 'wp-content/plugins/classic-widgets/classic-widgets.php') ) {
+		return;
+	}
+
+    ?>
+
+    <div class="is-dismissible ashe-widgets-notice-wrap">
+    	<div>
+        	<p><?php esc_html_e( 'Want to switch back to the Classic Widgets?', 'ashe' ); ?></p>
+
+			<a class="button-primary" href="<?php echo esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=classic-widgets' ), 'install-plugin_classic-widgets' ) ); ?>" >
+				<?php esc_html_e( 'Install Now', 'ashe' ); ?>
+			</a>
+        </div>
+    </div>
+
+	<style>.widgets-php .ashe-widgets-notice-wrap{display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;position:relative;max-width:360px;margin:0 auto;z-index:999;background:0 0;border:none;-webkit-box-shadow:none;box-shadow:none;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-top:10px}.widgets-php .ashe-widgets-notice-wrap>div{display:-webkit-box;display:-ms-flexbox;display:flex}.widgets-php .ashe-widgets-notice-wrap .button-primary{height:20px;line-height:26px;font-size:12px;letter-spacing:.5px;margin-left:10px;margin-top:5px}.widgets-php .ashe-widgets-notice-wrap .notice-dismiss{display:none}.widgets-php .ashe-widgets-notice{text-align:center} </style>
+
+    <?php
 }
 
 
 /**
- * Add a pingback url auto-discovery header for singularly identifiable articles.
- */
+** Add a pingback url auto-discovery header for singularly identifiable articles.
+*/
 function ashe_pingback_header() {
 	if ( is_singular() && pings_open() ) {
 		printf( '<link rel="pingback" href="%s">' . "\n", get_bloginfo( 'pingback_url' ) );
@@ -101,10 +211,10 @@ add_action( 'wp_head', 'ashe_pingback_header' );
 function ashe_scripts() {
 
 	// Theme Stylesheet
-	wp_enqueue_style( 'ashe-style', get_stylesheet_uri() );
+	wp_enqueue_style( 'ashe-style', get_stylesheet_uri(), array(), '2.234' );
 
 	// FontAwesome Icons
-	wp_enqueue_style( 'fontawesome', get_theme_file_uri( '/assets/css/font-awesome.css' ) );
+	wp_enqueue_style( 'fontawesome', get_theme_file_uri( '/assets/css/fontawesome.min.css' ), [], '6.5.1' );
 
 	// Fontello Icons
 	wp_enqueue_style( 'fontello', get_theme_file_uri( '/assets/css/fontello.css' ) );
@@ -116,14 +226,16 @@ function ashe_scripts() {
 	wp_enqueue_style( 'scrollbar', get_theme_file_uri( '/assets/css/perfect-scrollbar.css' ) );
 
 	// WooCommerce
-	wp_enqueue_style( 'ashe-woocommerce', get_theme_file_uri( '/assets/css/woocommerce.css' ) );
-
+	if ( class_exists( 'WooCommerce' ) ) {
+		wp_enqueue_style( 'ashe-woocommerce', get_theme_file_uri( '/assets/css/woocommerce.css' ) );
+	}
+	
 	// Theme Responsive CSS
-	wp_enqueue_style( 'ashe-responsive', get_theme_file_uri( '/assets/css/responsive.css' ) );
+	wp_enqueue_style( 'ashe-responsive', get_theme_file_uri( '/assets/css/responsive.css' ), array(), '1.9.7'  );
 
 	// Enqueue Custom Scripts
-	wp_enqueue_script( 'ashe-plugins', get_theme_file_uri( '/assets/js/custom-plugins.js' ), array( 'jquery' ), false, true );
-	wp_enqueue_script( 'ashe-custom-scripts', get_theme_file_uri( '/assets/js/custom-scripts.js' ), array( 'jquery' ), false, true );
+	wp_enqueue_script( 'ashe-plugins', get_theme_file_uri( '/assets/js/custom-plugins.js' ), array( 'jquery' ), '1.8.2', true );
+	wp_enqueue_script( 'ashe-custom-scripts', get_theme_file_uri( '/assets/js/custom-scripts.js' ), array( 'jquery' ), '1.9.7', true );
 
 	// Comment reply link
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -140,7 +252,7 @@ add_action( 'wp_enqueue_scripts', 'ashe_scripts' );
 function ashe_playfair_font_url() {
     $font_url = '';
     if ( 'off' !== _x( 'on', 'Google font: on or off', 'ashe' ) ) {
-        $font_url = add_query_arg( 'family', urlencode( 'Playfair Display:400,700' ), "//fonts.googleapis.com/css" );
+        $font_url = esc_url( add_query_arg( 'family', urlencode( 'Playfair Display:400,700' ), "//fonts.googleapis.com/css" ) );
     }
     return $font_url;
 }
@@ -148,14 +260,42 @@ function ashe_playfair_font_url() {
 function ashe_opensans_font_url() {
     $font_url = '';
     if ( 'off' !== _x( 'on', 'Google font: on or off', 'ashe' ) ) {
-        $font_url = add_query_arg( 'family', urlencode( 'Open Sans:400italic,400,600italic,600,700italic,700' ), "//fonts.googleapis.com/css" );
+        $font_url = esc_url( add_query_arg( 'family', urlencode( 'Open Sans:400italic,400,600italic,600,700italic,700' ), "//fonts.googleapis.com/css" ) );
     }
     return $font_url;
 }
 
+function ashe_kalam_font_url() {
+    $font_url = '';
+    if ( 'off' !== _x( 'on', 'Google font: on or off', 'ashe' ) ) {
+        $font_url = esc_url( add_query_arg( 'family', urlencode( 'Kalam' ), "//fonts.googleapis.com/css" ) );
+    }
+    return $font_url;
+}
+
+function ashe_rokkitt_font_url() {
+    $font_url = '';
+    if ( 'off' !== _x( 'on', 'Google font: on or off', 'ashe' ) ) {
+        $font_url = esc_url( add_query_arg( 'family', urlencode( 'Rokkitt' ), "//fonts.googleapis.com/css" ) );
+    }
+    return $font_url;
+}
+
+
+
 function ashe_gfonts_scripts() {
     wp_enqueue_style( 'ashe-playfair-font', ashe_playfair_font_url(), array(), '1.0.0' );
     wp_enqueue_style( 'ashe-opensans-font', ashe_opensans_font_url(), array(), '1.0.0' );
+
+    // Load Kalam if selected
+    if ( ashe_options( 'typography_logo_family' ) == 'Kalam' || ashe_options( 'typography_nav_family' ) == 'Kalam' ) {
+    	wp_enqueue_style( 'ashe-kalam-font', ashe_kalam_font_url(), array(), '1.0.0' );
+    }
+
+    // Load Rokkitt if selected
+    if ( ashe_options( 'typography_logo_family' ) == 'Rokkitt' || ashe_options( 'typography_nav_family' ) == 'Rokkitt' ) {
+    	wp_enqueue_style( 'ashe-rokkitt-font', ashe_rokkitt_font_url(), array(), '1.0.0' );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'ashe_gfonts_scripts' );
 
@@ -166,7 +306,7 @@ add_action( 'wp_enqueue_scripts', 'ashe_gfonts_scripts' );
 function ashe_widgets_init() {
 	
 	register_sidebar( array(
-		'name'          => __( 'Sidebar Right', 'ashe' ),
+		'name'          => __( 'Right Sidebar', 'ashe' ),
 		'id'            => 'sidebar-right',
 		'description'   => __( 'Add widgets here to appear in your sidebar.', 'ashe' ),
 		'before_widget' => '<div id="%1$s" class="ashe-widget %2$s">',
@@ -176,7 +316,7 @@ function ashe_widgets_init() {
 	) );
 
 	register_sidebar( array(
-		'name'          => __( 'Sidebar Left', 'ashe' ),
+		'name'          => __( 'Left Sidebar', 'ashe' ),
 		'id'            => 'sidebar-left',
 		'description'   => __( 'Add widgets here to appear in your sidebar.', 'ashe' ),
 		'before_widget' => '<div id="%1$s" class="ashe-widget %2$s">',
@@ -211,20 +351,26 @@ add_action( 'widgets_init', 'ashe_widgets_init' );
 /*
 ** Custom Image Sizes
 */
-add_image_size( 'ashe-slider-full-thumbnail', 1080, 540, true );
-add_image_size( 'ashe-full-thumbnail', 1140, 0, true );
-add_image_size( 'ashe-grid-thumbnail', 500, 330, true );
-add_image_size( 'ashe-single-navigation', 75, 75, true );
+if ( ! function_exists( 'ashe_add_image_sizes' ) ) {
+	function ashe_add_image_sizes() {
+		add_image_size( 'ashe-slider-full-thumbnail', 1080, 540, true );
+		add_image_size( 'ashe-full-thumbnail', 1140, 0, true );
+		add_image_size( 'ashe-list-thumbnail', 300, 300, true );
+		add_image_size( 'ashe-grid-thumbnail', 500, 330, true );
+		add_image_size( 'ashe-single-navigation', 75, 75, true );	
+	}
+}
+
 
 /*
 **  Top Menu Fallback
 */
 
-function top_menu_fallback() {
+function ashe_top_menu_fallback() {
 	if ( current_user_can( 'edit_theme_options' ) ) {
 		echo '<ul id="top-menu">';
 			echo '<li>';
-				echo '<a href="'. esc_url( admin_url('nav-menus.php') ) .'">'. esc_html__( 'Set up Menu', 'ashe' ) .'</a>';
+				echo '<a href="'. esc_url( admin_url('nav-menus.php') ) .'">'. esc_html__( 'Setup Menu', 'ashe' ) .'</a>';
 			echo '</li>';
 		echo '</ul>';
 	}
@@ -243,7 +389,7 @@ function ashe_main_menu_fallback() {
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			echo '<ul id="main-menu">';
 				echo '<li>';
-					echo '<a href="'. esc_url( home_url('/') .'wp-admin/nav-menus.php' ) .'">'. esc_html__( 'Set up Menu', 'ashe' ) .'</a>';
+					echo '<a href="'. esc_url( admin_url('nav-menus.php') ) .'">'. esc_html__( 'Setup Menu', 'ashe' ) .'</a>';
 				echo '</li>';
 			echo '</ul>';
 		}
@@ -316,6 +462,14 @@ function ashe_hex2rgba( $color, $opacity = 1 ) {
     return $output;
 }
 
+// Retrieves the attachment src from the file URL
+function ashe_get_image_src_by_url( $image_url, $image_size ) {
+	if ( ! isset($image_url) || '' === $image_url ) {
+		return [ 0 => null ];
+	} else {
+		return wp_get_attachment_image_src( attachment_url_to_postid($image_url), $image_size );
+	}
+}
 
 // Social Media
 if ( ! function_exists( 'ashe_social_media' ) ) {
@@ -332,25 +486,25 @@ if ( ! function_exists( 'ashe_social_media' ) ) {
 			?>
 
 			<a href="<?php echo esc_url( ashe_options( 'social_media_url_1' ) ); ?>" target="<?php echo esc_attr($social_window); ?>">
-				<i class="fa fa-<?php echo esc_attr(ashe_options( 'social_media_icon_1' )); ?>"></i>
+				<i class="<?php echo esc_attr(ashe_fix_social_media_icon(ashe_options( 'social_media_icon_1' ))); ?>"></i>
 			</a>
 			<?php endif; ?>
 
 			<?php if ( ashe_options( 'social_media_url_2' ) !== '' ) : ?>
 				<a href="<?php echo esc_url( ashe_options( 'social_media_url_2' ) ); ?>" target="<?php echo esc_attr($social_window); ?>">
-					<i class="fa fa-<?php echo esc_attr(ashe_options( 'social_media_icon_2' )); ?>"></i>
+					<i class="<?php echo esc_attr(ashe_fix_social_media_icon(ashe_options( 'social_media_icon_2' ))); ?>"></i>
 				</a>
 			<?php endif; ?>
 
 			<?php if ( ashe_options( 'social_media_url_3' ) !== '' ) : ?>
 				<a href="<?php echo esc_url( ashe_options( 'social_media_url_3' ) ); ?>" target="<?php echo esc_attr($social_window); ?>">
-					<i class="fa fa-<?php echo esc_attr(ashe_options( 'social_media_icon_3' )); ?>"></i>
+					<i class="<?php echo esc_attr(ashe_fix_social_media_icon(ashe_options( 'social_media_icon_3' ))); ?>"></i>
 				</a>
 			<?php endif; ?>
 
 			<?php if ( ashe_options( 'social_media_url_4' ) !== '' ) : ?>
 				<a href="<?php echo esc_url( ashe_options( 'social_media_url_4' ) ); ?>" target="<?php echo esc_attr($social_window); ?>">
-					<i class="fa fa-<?php echo esc_attr(ashe_options( 'social_media_icon_4' )); ?>"></i>
+					<i class="<?php echo esc_attr(ashe_fix_social_media_icon(ashe_options( 'social_media_icon_4' ))); ?>"></i>
 				</a>
 			<?php endif; ?>
 
@@ -361,6 +515,88 @@ if ( ! function_exists( 'ashe_social_media' ) ) {
 	} // ashe_social_media()
 
 } // function_exists( 'ashe_social_media' )
+
+// Fix Social Media Icon
+function ashe_fix_social_media_icon( $icon ) {
+
+	switch ($icon) {
+		case 'facebook':
+			$icon_class = 'fa-brands fa-facebook-f';
+			break;
+		case 'facebook-official':
+			$icon_class = 'fa-brands fa-square-facebook';
+			break;
+		case 'facebook-square':
+			$icon_class = 'fa-brands fa-facebook';
+			break;
+		case 'linkedin':
+			$icon_class = 'fa-brands fa-linkedin-in';
+			break;
+		case 'linkedin-square':
+			$icon_class = 'fa-brands fa-linkedin';
+			break;
+		case 'film':
+			$icon_class = 'fa-solid fa-film';
+			break;
+		case 'youtube-play':
+			$icon_class = 'fa-brands fa-youtube';
+			break;
+		case 'youtube-square':
+			$icon_class = 'fa-brands fa-square-youtube';
+			break;
+		case 'info':
+			$icon_class = 'fa-solid fa-info';
+			break;
+		case 'info-circle':
+			$icon_class = 'fa-solid fa-circle-info';
+			break;
+		case 'rss':
+			$icon_class = 'fa-solid fa-rss';
+			break;
+		case 'rss-square':
+			$icon_class = 'fa-solid fa-square-rss';
+			break;
+		case 'heart':
+			$icon_class = 'fa-solid fa-heart';
+			break;
+		case 'heart-o':
+			$icon_class = 'fa-regular fa-heart';
+			break;
+		case 'gamepad':
+			$icon_class = 'fa-solid fa-gamepad';
+			break;
+		case 'map-marker':
+			$icon_class = 'fa-solid fa-location-dot';
+			break;
+		case 'envelope':
+			$icon_class = 'fa-solid fa-envelope';
+			break;
+		case 'envelope-o':
+			$icon_class = 'fa-regular fa-envelope';
+			break;
+		case 'envelope-square ':
+			$icon_class = 'fa-solid fa-square-envelope';
+			break;
+		case 'snapchat-square':
+			$icon_class = 'fa-brands fa-square-snapchat';
+			break;
+		case 'shopping-cart':
+			$icon_class = 'fa-solid fa-cart-shopping';
+			break;
+		case 'tiktok':
+			$icon_class = 'fa-brands fa-tiktok';
+			break;
+		case 'credit-card':
+			$icon_class = 'fa-regular fa-credit-card';
+			break;
+		
+		default:
+			$icon_class = 'fa-brands fa-'. $icon;
+			break;
+	}
+
+	return $icon_class;
+}
 
 
 // Related Posts
@@ -394,9 +630,9 @@ if ( ! function_exists( 'ashe_related_posts' ) ) {
 			    )
 			);
 
-			// if ( ashe_is_preview() ) {
-			// 	array_pop($args);
-			// }
+			if ( ashe_is_preview() ) {
+				array_pop($args);
+			}
 
 			$similar_posts = new WP_Query( $args );	
 
@@ -438,14 +674,88 @@ if ( ! function_exists( 'ashe_related_posts' ) ) {
 function ashe_custom_search_form( $html ) {
 
 	$html  = '<form role="search" method="get" id="searchform" class="clear-fix" action="'. esc_url( home_url( '/' ) ) .'">';
-	$html .= '<input type="search" name="s" id="s" placeholder="'. esc_attr__( 'Search...', 'ashe' ) .'" data-placeholder="'. esc_attr__( 'Type & hit Enter...', 'ashe' ) .'" value="'. get_search_query() .'" />';
-	$html .= '<i class="fa fa-search"></i>';
+	$html .= '<input type="search" name="s" id="s" placeholder="'. esc_attr__( 'Search...', 'ashe' ) .'" data-placeholder="'. esc_attr__( 'Type then hit Enter...', 'ashe' ) .'" value="'. get_search_query() .'" />';
+	$html .= '<i class="fa-solid fa-magnifying-glass"></i>';
 	$html .= '<input type="submit" id="searchsubmit" value="st" />';
 	$html .= '</form>';
 
 	return $html;
 }
 add_filter( 'get_search_form', 'ashe_custom_search_form' );
+
+
+/*
+**  Post Share
+*/
+
+function ashe_post_sharing_check() {
+	if ( ashe_options( 'blog_page_show_facebook' ) || ashe_options( 'blog_page_show_twitter' ) || ashe_options( 'blog_page_show_pinterest' ) || ashe_options( 'blog_page_show_whatsapp' ) || ashe_options( 'blog_page_show_linkedin' ) || ashe_options( 'blog_page_show_tumblr' ) || ashe_options( 'blog_page_show_reddit' ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+
+if ( ! function_exists( 'ashe_post_sharing' ) ) { 
+	function ashe_post_sharing() {	
+	
+	global $post; ?>	
+	<div class="post-share">
+
+		<?php if ( ashe_options( 'blog_page_show_facebook' ) ) : 
+		$facebook_src = 'https://www.facebook.com/sharer/sharer.php?u='.esc_url( get_the_permalink() ); ?>
+		<a class="facebook-share" target="_blank" href="<?php echo esc_url ( $facebook_src ); ?>">
+			<i class="fa-brands fa-facebook-f"></i>
+		</a>
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_twitter' ) ) : 
+		$twitter_src = 'https://twitter.com/intent/tweet?url='. esc_url( get_the_permalink() ); ?>
+		<a class="twitter-share" target="_blank" href="<?php echo esc_url ( $twitter_src ); ?>">
+			<i class="fa-brands fa-x-twitter"></i>
+		</a>
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_pinterest' ) ) : 
+		$pinterest_src = 'https://pinterest.com/pin/create/button/?url='.esc_url( get_the_permalink() ).'&amp;media='.esc_url( wp_get_attachment_url( get_post_thumbnail_id($post->ID)) ).'&amp;description='.get_the_title(); ?>
+		<a class="pinterest-share" target="_blank" href="<?php echo esc_url ( $pinterest_src ); ?>">
+			<i class="fa-brands fa-pinterest"></i>
+		</a>
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_whatsapp' ) ) : 
+		$whatsapp_src = 'https://api.whatsapp.com/send?text=*'. get_the_title() .'*\n'. esc_html( get_the_excerpt() ) .'\n'. esc_url( get_the_permalink() ); ?>
+		<a class="whatsapp-share" target="_blank" href="<?php echo esc_url ( $whatsapp_src ); ?>">
+			<i class="fa-brands fa-square-whatsapp"></i>
+		</a>										
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_linkedin' ) ) :
+		$linkedin_src = 'http://www.linkedin.com/shareArticle?url='.esc_url( get_the_permalink() ).'&amp;title='.get_the_title(); ?>
+		<a class="linkedin-share" target="_blank" href="<?php echo esc_url( $linkedin_src ); ?>">
+			<i class="fa-brands fa-linkedin"></i>
+		</a>
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_tumblr' ) ) : 
+		$tumblr_src = 'http://www.tumblr.com/share/link?url='. urlencode( esc_url(get_permalink()) ) .'&amp;name='.urlencode( get_the_title() ).'&amp;description='.urlencode( wp_trim_words( get_the_excerpt(), 50 ) ); ?>
+		<a class="tumblr-share" target="_blank" href="<?php echo esc_url( $tumblr_src ); ?>">
+			<i class="fa-brands fa-tumblr"></i>
+		</a>
+		<?php endif; ?>
+
+		<?php if ( ashe_options( 'blog_page_show_reddit' ) ) : 
+		$reddit_src = 'http://reddit.com/submit?url='. esc_url( get_the_permalink() ) .'&amp;title='.get_the_title(); ?>
+		<a class="reddit-share" target="_blank" href="<?php echo esc_url( $reddit_src ); ?>">
+			<i class="fa-brands fa-reddit"></i>
+		</a>
+		<?php endif; ?>
+
+	</div>
+	<?php
+	}
+}
 
 
 /*
@@ -587,20 +897,95 @@ add_filter( 'loop_shop_per_page', 'ashe_set_shop_post_per_page', 20 );
 // Pagination
 remove_action( 'woocommerce_pagination', 'woocommerce_pagination', 10 );
 
-function woocommerce_pagination() {
+function ashe_woocommerce_pagination() {
 	get_template_part( 'templates/grid/blog', 'pagination' );
 }
-add_action( 'woocommerce_pagination', 'woocommerce_pagination', 10 );
+add_action( 'woocommerce_pagination', 'ashe_woocommerce_pagination', 10 );
+
 
 /*
 ** Incs: Theme Customizer
 */
 
 // Customizer
+require get_parent_theme_file_path( '/inc/customizer/customizer-repeater/inc/customizer.php' );
 require get_parent_theme_file_path( '/inc/customizer/customizer.php' );
 require get_parent_theme_file_path( '/inc/customizer/customizer-defaults.php' );
 require get_parent_theme_file_path( '/inc/customizer/dynamic-css.php' );
+require get_parent_theme_file_path( '/inc/customizer/css/theme-skins.php' );
 require get_parent_theme_file_path( '/inc/preview/demo-preview.php' );
 
 // About Ashe
 require get_parent_theme_file_path( '/inc/about/about-ashe.php' );
+
+require get_parent_theme_file_path('/inc/rating/rating.php');
+
+add_action( 'after_switch_theme', 'ashe_activation_time');
+add_action( 'after_switch_theme', 'delete_pro_dismiss_on_activation');
+add_action('after_setup_theme', 'ashe_activation_time');
+    
+function ashe_activation_time() {
+	// if ( false === get_option( 'ashe_activation_time_update_to_pro' ) ) {
+	// 	add_option( 'ashe_activation_time_update_to_pro', strtotime('now') );
+	// }
+
+	if ( false === get_option( 'ashe_activation_time' ) ) {
+		add_option( 'ashe_activation_time', strtotime('now') );
+	}
+	if ( false === get_option( 'ashe_random_number' ) ) {
+		add_option('ashe_random_number', rand(10, 20));
+	}
+	
+	// if (get_option('ashe_plugin_previous_version') == false) {
+	// 	update_option('ashe_plugin_previous_version', wp_get_theme()->get('Version'));
+	// }
+	
+	// if (wp_get_theme()->get('Version') != get_option('ashe_plugin_previous_version')) {
+	// 	delete_option('ashe_update_to_pro_dismiss_notice');
+	// 	update_option('ashe_plugin_previous_version', wp_get_theme()->get('Version'));
+	// }
+}
+
+function delete_pro_dismiss_on_activation() {
+	delete_option('ashe_update_to_pro_dismiss_notice');
+}
+
+// require get_parent_theme_file_path('/inc/upgrade-to-pro/upgrade-to-pro.php');
+
+// Welcome Notice
+// require_once get_parent_theme_file_path( '/inc/activation/class-welcome-notice.php' );
+
+
+/*
+** TGM Plugin Activation Class
+*/
+
+require_once get_parent_theme_file_path( '/inc/tgm/class-tgm-plugin-activation.php' );
+
+function ashe_register_recommended_plugins() {
+	$plugins = array(
+        array(
+			'name'      => 'Elementor',
+			'slug'      => 'elementor',
+			'required'  => false,
+		),
+        array(
+			'name'      => 'Royal Elementor Addons',
+			'slug'      => 'royal-elementor-addons',
+			'required'  => false,
+		),
+	);
+	$config = array(
+		'id'           => 'ashe',
+		'default_path' => '',
+		'menu'         => 'tgmpa-install-plugins',
+		'has_notices'  => true,
+		'dismissable'  => true,
+		'dismiss_msg'  => '',
+		'is_automatic' => false,
+		'message'      => '',
+	);
+	tgmpa( $plugins, $config );
+}
+
+// add_action( 'tgmpa_register', 'ashe_register_recommended_plugins' );

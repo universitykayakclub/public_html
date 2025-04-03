@@ -5,24 +5,35 @@
  * @package bbPress
  * @subpackage Theme
  */
-do_action('bbp_template_before_user_profile');
+do_action( 'bbp_template_before_user_profile' );
 ?>
 
-<div id="bbp-user-profile" class="bbp-user-profile">
-    <h2 class="entry-title"><?php _e('Profile', 'evolve'); ?></h2>
-    <div class="bbp-user-section">
+    <div id="bbp-user-profile" class="bbp-user-profile">
+        <h3 class="mb-3">
 
-        <?php if (bbp_get_displayed_user_field('description')) : ?>
+			<?php esc_html_e( 'Profile', 'evolve' ); ?>
 
-            <p class="bbp-user-description"><?php bbp_displayed_user_field('description'); ?></p>
+        </h3>
+        <div class="bbp-user-section">
 
-        <?php endif; ?>
+			<?php if ( bbp_get_displayed_user_field( 'description' ) ) : ?>
 
-        <p class="bbp-user-forum-role"><span class="bold"><?php printf(__('Forum Role:', 'evolve')); ?> </span><?php printf(bbp_get_user_display_role()); ?></p>
-        <p class="bbp-user-topic-count"><span class="bold"><?php printf(__('Topics Started:', 'evolve')); ?> </span><?php printf(bbp_get_user_topic_count_raw()); ?></p>
-        <p class="bbp-user-reply-count"><span class="bold"><?php printf(__('Replies Created:', 'evolve')); ?> </span><?php printf(bbp_get_user_reply_count_raw()); ?></p>
-    </div>
-</div><!-- #bbp-author-topics-started -->
+                <p class="bbp-user-description"><?php bbp_displayed_user_field( 'description' ); ?></p>
 
-<?php
-do_action('bbp_template_after_user_profile');
+			<?php endif; ?>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <strong><?php printf( __( 'Forum role:', 'evolve' ) ); ?></strong> <?php printf( bbp_get_user_display_role() ); ?>
+                </div>
+                <div class="col-md-4">
+                    <strong><?php printf( __( 'Topics started:', 'evolve' ) ); ?></strong> <?php printf( bbp_get_user_topic_count_raw() ); ?>
+                </div>
+                <div class="col-md-4">
+                    <strong><?php printf( __( 'Replies created:', 'evolve' ) ); ?></strong> <?php printf( bbp_get_user_reply_count_raw() ); ?>
+                </div>
+            </div>
+        </div>
+    </div><!-- #bbp-author-topics-started -->
+
+<?php do_action( 'bbp_template_after_user_profile' );

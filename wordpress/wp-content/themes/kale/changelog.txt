@@ -1,8 +1,111 @@
+
 == Changelog ==
+
+* 2.7
+* 10/01/2023
+* Update: Screenshot has been optimized to make the themes page faster
+* Update: Old Kirki update function has been removed
+* Update: Recommended classes are now included
+* New: Option to enable/disable post excerpts in blog feed
+* Fix: European characters in site title are no longer cut off
+* Fix: Removing URL field from comments form no longer breaks page layout
+* Fix: Pinterest icon should now display properly for international Pinterest domains
+* Fix: Social links with "feed" in the URL display the correct (instead of RSS) icon
+
+* 2.6
+* 11/21/2022
+* Update: Font Awesome to version 6 (TikTok icon support!)
+* Update: Added missing strings to kale.pot for easier translating
+* Update: Support for search block in header
+* New: Option to control whether prev/next links include posts from other categories
+* Fix: PHP 8 compatibility
+* Fix: RTL compatibility for slider
+* Fix: Better compatibility with GDPR plugins
+* Fix: WooCommerce product reviews compatibility
+* Fix: Navigation menu issue with minification plugins
+* Fix: Cleanup of various minor invalid CSS rules
+* Fix: Duplicate closing anchor tag in footer
+
+* 2.5.2
+* 08/20/2020
+* Update: Admin page styling
+* Update: Removed WPForms affiliate link
+
+* 2.5.1
+* 06/21/2020
+* New: WPForms styling override option added
+* New: Added support for WP-PageNavi 
+* Updated: Screenshot
+* Updated: kale-kirki-installer.php
+* Updated: "Read more" for excerpts moved under Blog Feed options (in Customizer)
+* Fixed: iframe responsive videos affecting third party iframes
+
+* 2.5
+* 09/29/2019
+* New: Accessibility - "skip to content" link added https://make.wordpress.org/themes/handbook/review/accessibility/required/#skip-links
+* New: Accessibility - keyboard navigation
+* New: Allow for dropdown menus in header left and header right
+* New: Post excerpts (links, 'read more' text)
+* Updated: Mobile view for Header widgets - menus and search widget
+* Fixed: YouTube iframe without src caused JS error
+
+* 2.4.3
+* 05/25/2019
+* New: Option to hide featured images across all pages
+* New: wp_body_open hook
+* New: Category description displayed on category page
+* Update: Bootstrap updated to version 3.4.1
+* Update: Hyperlinks in content reformatted
+
+* 2.4.2
+* 09/29/2018
+* Updated: Sample images - according to new wordpress.org requirements
+* New: Search widget in Header - Left
+
+* 2.4.1
+* 08/04/2018
+* Update: Welcome page, added recommended plugins
+* Update: Theme defaults changed to banner, hide featured posts, hide highlight post
+* Update: style-rtl.css
+* Update: kale.pot
+* Added: Recommendation for WPForms
+* New: Search widget in Header - Right
+
+* 2.4
+* 07/08/2018
+* New: Welcome page
+* New: Added styling for default WordPress widgets
+* New: Added GDPR compliance checkbox to comment form
+* New: Added styling for all WordPress default widgets
+* Update: Google fonts enqueue
+* Update: Meta box clean up 
+* Update: Typography
+* Update: style-rtl.css
+* Update: Added `rtl-language-support` tag in style.css
+* Update: .pot file
+
+* 2.3
+* 05/13/2018
+* New: Added option (page meta box) to display featured image as a banner on pages 
+* New: MailPoet 3 support
+* Fix: Replaced get_parent_theme_file_path() with get_template_directory()
+
+* 2.2
+* 3/11/2018
+* Fix: Adjusted formatting of header-row-1 widgets
+* Update: Bootstrap updated to version 3.3.7
+* Update: Search results title
+* Update: Removed embed_oembed_html filter
+* Update: Documentation link updated to https://help.lyrathemes.com/#collection-181
+* Update: Sidebar Size option moved to "General Settings" section
+* Update: Menu Settings moved inside "Menus"
+* Update: .pot file
+* New: Added option to show/hide next/prev posts nav "kale_posts_posts_nav_show"
+* New: Removed bundled Kirki, recommending via TGM-Plugin-Activation, added fallback class and Kirki installation message in Customizer
 
 = 2.1.1
 * 11/17/2017
-* Fix: Kirki switches data format changed (in 3.0.15), created new function `kirki_update_3015` to convert previous values 
+* Fix: Kirki switches data format changed (in 3.0.15), created new function `kale_kirki_update_3015` to convert previous values 
 * Fix: Kirki switches data format changed (in 3.0.15), updated customize/customize.php
 * Fix: Switch styling update
 

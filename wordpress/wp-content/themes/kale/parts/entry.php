@@ -8,6 +8,7 @@
 <?php
 
 $kale_blog_feed_meta_show = kale_get_option('kale_blog_feed_meta_show');
+$kale_blog_feed_excerpt_show = kale_get_option('kale_blog_feed_excerpt_show');
 $kale_blog_feed_date_show = kale_get_option('kale_blog_feed_date_show');
 $kale_blog_feed_category_show = kale_get_option('kale_blog_feed_category_show');
 $kale_blog_feed_author_show = kale_get_option('kale_blog_feed_author_show');
@@ -44,9 +45,16 @@ if(!isset($kale_frontpage_large_post)) $kale_frontpage_large_post = 'no';
         <?php } ?>
         
         <?php if($kale_entry == 'full' ) { ?>
-        <div class="entry-summary"><?php the_content(); ?><?php wp_link_pages(); ?></div>
+        <div class="entry-summary"><?php if($kale_blog_feed_excerpt_show == 1) {
+            the_content( sprintf( __( 'Continue reading%s', 'kale' ),
+                '<span class="screen-reader-text">  ' . get_the_title() . '</span>'
+            ) ); 
+        } ?><?php kale_pagination('wp_link_pages'); ?></div>
         <?php } else { ?>
-        <div class="entry-summary"><?php the_excerpt(); ?><?php wp_link_pages(); ?></div>
+        <div class="entry-summary">
+          <?php if($kale_blog_feed_excerpt_show == 1) { the_excerpt(); } ?>
+          <?php kale_pagination('wp_link_pages'); ?>
+        </div>
         <?php } ?>
         
         <?php if($kale_blog_feed_meta_show == 1) { ?>
