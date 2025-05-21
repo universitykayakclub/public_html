@@ -1,4 +1,5 @@
-ErrorDocument 404 /404.html
+ErrorDocument 500 "Houston, we have a problem."
+ErrorDocument 404 https://students.washington.edu/ukc/errordocs/404.html
 
 RewriteEngine On
 RewriteCond %{HTTPS} off
