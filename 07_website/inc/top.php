@@ -21,7 +21,7 @@
 			<ul id="nav">
 				<li><a href="index.php" title="UKC Home">Home</a></li>
 				<li><img class="nav_line" src="imagelib/light_purple_dot.gif" width="1" height="30" /></li>
-				<li><a href="/ukc/blog" title="UKC Blog">Blog</a></li>
+				<li><a href="blog" title="UKC Blog">Blog</a></li>
 				<li><img class="nav_line" src="imagelib/light_purple_dot.gif" width="1" height="30" /></li>
 				<li><a href="seakayaking" title="Sea Kayaking">Sea</a></li>
 				<li><img class="nav_line" src="imagelib/light_purple_dot.gif" width="1" height="30" /></li>

@@ -47,19 +47,19 @@
 					
 					<h4>Information and Fun Stuff</h4>
 					<ul>
-						<li><a href="http://www.kayaking.peak.org/">Rackley's OR/WA site, steep creeks!</a></li>
+						<li><s><a href="http://www.kayaking.peak.org/">Rackley's OR/WA site, steep creeks!</a></s> is now <a href="https://www.oregonkayaking.net/">Oregon Kayaking</a></li>
 						<li><a href="http://www.paddleguides.com">Paddleguides</a></li>
 						<li><a href="http://www.waboater.com">Washington Boater site</a></li>
 
-						<li><a href="http://cascadeclassics.alpinelite.com">Cascade Classics</a></li>
-						<li><a href="http://www.gorp.com/gorp/activity/paddle.htm">GORP - paddling</a></li>
+						<li><s><a href="http://cascadeclassics.alpinelite.com">Cascade Classics</a></s> is now <a href="http://www.cascadeclassics.org/">Cascade Classics</a> RIP</li>
+						<li><s><a href="http://www.gorp.com/gorp/activity/paddle.htm">GORP - paddling</a></s> website changed hands. Older/Better site: <a href="https://web.archive.org/web/20040724043508/http://gorp.away.com/gorp/activity/paddle.htm">Gorp - paddling</a></li>
 						<li><a href="http://www.kwagunt.net/riverinfo.html">Western Rivers permit info</a></li>
 						<li><a href="http://www.whitewatervideo.com/">Whitewater Video</a></li>
 						<li><a href="http://www.seakayakermag.com">Sea Kayaker Magazine</a></li>
-						<li><a href="http://www.wavelengthmagazine.com/">Wave~Length Paddling Magazine</a></li>
+						<li><s><a href="http://www.wavelengthmagazine.com/">Wave~Length Paddling Magazine</a></s> now defunct: <a href="https://web.archive.org/web/20091124044439/http://www.wavelengthmagazine.com/">archive.org link</a></li>
 
 						<li><a href="http://apps.ecy.wa.gov/shorephotos/">Aerial Photos of Washington State Coastlines</a></li>
-						<li><a href="http://students.washington.edu/~ukc/library/onlinearticles.html">More Links to online kayak articles</a></li>
+						<li><a href="http://students.washington.edu/ukc/07_website/library/onlinearticles.html">More Links to online kayak articles</a></li>
 					</ul>
 				</div><!--left_column-->
 

@@ -1,3 +1,5 @@
 phpMyAdmin-latest/
 php_tmp/
 *.tar.gz
+
+wordpress/wp-admin/*
